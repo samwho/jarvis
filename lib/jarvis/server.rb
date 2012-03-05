@@ -39,6 +39,17 @@ class MusicServer < EM::Connection
       kill_generator_thread
     when "start"
       start_new_generator_thread
+    when /^load/
+      # This line loads a class based on the last word given in the load
+      # command.
+      class_name = data.split(' ').last
+
+      begin
+        @generator = Module.const_get(class_name).new
+        puts "Loaded generator #{class_name}"
+      rescue Exception => e
+        puts "Could not load class #{class_name}: #{e}"
+      end
     else
       send_data @generator.handle_input(data)
     end
