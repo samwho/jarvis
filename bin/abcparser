@@ -1,0 +1,6 @@
+#!/bin/sh
+
+# This is a simple script that runs the Java ABC parser that I wrote to
+# convert .abc files to a sequence of midi note values and durations.
+
+java -jar "/home/sam/Dropbox/Code/Java/ABCParser/dist/ABCParser.jar" $1

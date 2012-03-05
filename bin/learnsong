@@ -1,0 +1,59 @@
+#!/usr/bin/env ruby
+
+require 'rubygems'
+require 'json'
+
+def get_midigram path
+  if File.exists? path
+    if path =~ /.mid(i)?$/
+      `midi2abc  #{path} -midigram -Q 10`
+    else
+      `abc2midi #{path} -o tmp.mid 2>1 1>/dev/null && midi2abc tmp.mid -midigram -Q 100 && rm tmp.mid`
+    end
+  end
+end
+
+def get_midigram_line_info line
+  s = line.split ' '
+
+  {
+    :note     => s[4],
+    :duration => s[5]
+  }
+end
+
+# Command line args check
+if ARGV.length < 2
+  puts "Usage: learnsong song.mid database.ndb"
+  Process.exit
+end
+
+# Extract args
+new_song  = get_midigram ARGV.shift
+data_file = ARGV.shift
+
+# Check if the data file exists, do processing
+if File.exists? data_file
+  data = JSON.parse File.open(data_file, 'r') { |file| file.read }
+else
+  data = Hash.new
+end
+
+new_song.split(/\n/).each do |line|
+  info = get_midigram_line_info line
+  next if info[:note].to_i <= 0
+
+  node = data[info[:note]]
+
+  node = {} unless node.is_a? Hash
+  node['count'] = 0 unless node['count']
+  node['count'] += 1
+
+  node['durations'] = {} unless node['durations']
+  node['durations'][info[:duration]] = 0 unless node['durations'][info[:duration]]
+  node['durations'][info[:duration]] += 1
+
+  data[info[:note]] = node
+end
+
+File.open(data_file, 'w+') { |file| file.write JSON.pretty_generate(data) }
