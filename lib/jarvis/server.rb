@@ -81,9 +81,17 @@ module Jarvis
       @midi.autodetect_driver
 
       # Connect the MIDI input to the MIDI output.
-      aconnect = `aconnect -il`
-      m = aconnect.match /Client-([0-9]+)/
-      fork { `aconnect #{m[0]}:0 TiMidity:0` }
+      fork do
+        aconnect = `aconnect -il`
+        m = aconnect.match /Client-([0-9]+)/
+        result = `aconnect #{m[0]}:0 TiMidity:0 2>&1`
+        if result.length != 0
+          Jarvis.log.error "Aconnect failed: #{result.strip}"
+          Jarvis.log.error "You might not have a software synth, e.g. Timidity, running."
+        end
+      end
+
+      # Wait for the above fork to finish
       Process.wait
 
       @thread = Thread.new(generator, @midi) do |g, m|
