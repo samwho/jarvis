@@ -35,9 +35,29 @@ a MIDI software synthesizer, Ruby 1.8 installed and the required gems
 (eventmachine and midiator) it should work, but I'm guessing that in practice it
 is probably going to be a tad harder to achieve cross compatibility.
 
-Here's how I run the code:
+First thing you need to do is have Ruby 1.8.7 installed. You can acquire the
+code online or, if you use RVM, you can use this command:
 
-First I start up the `timidity` MIDI software synthesiser like so
+    $ rvm install 1.8.7
+
+When you've done that, you'll need to have the Bundler gem installed. You can
+install it like so:
+
+    $ gem install bundler
+
+If you're using RVM, I recommend having Bundler in your global gemset:
+
+    $ rvm gemset use global
+    $ gem install bundler
+
+Then run bundler when inside the same directory as this README file:
+
+    $ cd path/to/jarvis/
+    $ bundle install
+
+That will install all of the required gems.
+
+Then start up the `timidity` MIDI software synthesiser like so:
 
     $ timidity -iA
 

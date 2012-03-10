@@ -36,6 +36,8 @@ end.parse!
 Jarvis.log.formatter = proc do |severity, datetime, progname, msg|
   result = "[#{severity.ljust(5)} #{datetime}]: #{msg}\n"
 
+  # Only set the colour if the logger is going to stdout. We don't want colour
+  # information in log files.
   if Jarvis.options[:logfile] == STDOUT
     case severity
     when "DEBUG"
@@ -61,7 +63,10 @@ EventMachine::run do
   Signal.trap("INT")  { EventMachine.stop }
   Signal.trap("TERM") { EventMachine.stop }
 
-  EventMachine::start_server "127.0.0.1", 1337, Jarvis::MusicServer
+  EventMachine::start_server Jarvis.options[:ip], Jarvis.options[:port],
+    Jarvis::MusicServer
+
   puts `cowsay -f tux "Welcome to Jarvis."` unless Jarvis.options[:nowelcome]
+
   Jarvis.log.info "Server started."
 end
