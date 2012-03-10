@@ -79,7 +79,9 @@ you followed the step above to load up the MIDI server.
 It is also possible that your MIDI ports did not link up correctly. In the
 `./lib/jarvis/server.rb` file there is a line that looks like this:
 
+````
    fork { `aconnect 129:0 128:0` }
+````
 
 This line is creating a new process to connect a MIDI input to a MIDI output,
 because MIDI inputs need to be told where to send their output to. It's entirely
@@ -99,21 +101,21 @@ accordingly. Input comes first, then output.
 
 # Using the default jarvis-client
 
-The default jarvis-client is just an EventMachine keyboard listener. It listens
+The default `./bin/jarvis-client` is just an EventMachine keyboard listener. It listens
 for keyboard input and then sends messages to the server every time you hit
 enter.
 
 To start music, use:
 
-    start
+    jarvis-client> start
 
 To stop music, use:
 
-    stop
+    jarvis-client> stop
 
 To load a new note generator use:
 
-    load GeneratorName
+    jarvis-client> load GeneratorName
 
 Replacing generator name for a class in the `./lib/jarvis/generators/`
 directory.
