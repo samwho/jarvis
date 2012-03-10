@@ -101,12 +101,29 @@ accordingly. Input comes first, then output.
 
 # It's complaining that it can't find libasound.so
 
-This is because you don't have the ALSA development libraries. On Arch Linux I
-never came across this problem but a friend on Fedora had to do:
+This is because you don't have the ALSA development libraries.
+
+## Fedora Fix
 
     yum install alsa-lib-devel
 
-To overcome the problem. This may differ depending on your distribution.
+## Ubuntu Fix
+
+    apt-get install libasound2-dev
+
+This is confirmed to work on 11.04.
+
+# It's complaining that it can't find the program 'cowsay'
+
+Yeah. Whoops. Cowsay is just a simple program that displays a cow (or another
+animal) saying something in a speech bubble. Just a bit of fun. Two ways to fix
+this: install cowsay:
+
+    $ apy-get install cowsay
+
+Or run Jarvis with the `--no-welcome` flag:
+
+    $ ./bin/jarvis --no-welcome
 
 # Using the default jarvis-client
 

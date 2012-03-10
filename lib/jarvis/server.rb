@@ -86,9 +86,13 @@ module Jarvis
       Process.wait
 
       @thread = Thread.new(generator, @midi) do |g, m|
-        loop do
-          n = g.next
-          m.play n.note, n.duration
+        begin
+          loop do
+            n = g.next
+            m.play n.note, n.duration
+          end
+        rescue e
+          Jarvis.log.error "Generator thread died: #{e}"
         end
       end
     end
