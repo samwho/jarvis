@@ -35,9 +35,9 @@ class KeyboardHandler < EM::Connection
   end
 end
 
-EM.run {
+EM.run do
   q = EM::Queue.new
 
   EM.connect('127.0.0.1', 1337, Echo, q)
   EM.open_keyboard(KeyboardHandler, q)
-}
+end

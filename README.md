@@ -32,27 +32,61 @@ Here's how I run the code:
 
 First I start up the `timidity` MIDI software synthesiser like so
 
-    $ timidity -iA -B2,8 -Os1l -s 44100
+    $ timidity -iA
 
-Then my code is more or less good to go. This may not necessarily be the case
-for everyone, though, even with my setup. MIDI software synthesisers act as
-servers and they use an interesting port notation. This code acts as a client to
-that MIDI server and it needs to be told explicitly that it needs to connect to
-it, which is done with the following call:
+Timidity++ should come as standard on Ubuntu. On Arch, I had to install it with
+`pacman -S timidity++`.
 
-    $ aconnect 128:0 129:0
+Then you should be able to run the `./bin/jarvis` server fine. Nothing will play
+at first, you need to connect to the server with a client by running
+`./bin/jarvis-client`. A default note generator will be loaded in (it isn't
+defined which will be the default at this moment in time). If you type "start"
+at the jarvis-client command line, music should start playing.
 
-Which I have hard coded in (messy, I know). To find out your MIDI servers, you
-can run:
+# I don't hear anything.
+
+There are a wide variety of reasons that you might not hear anything. The one I
+come across most often is that I've forgotten to run the MIDI server. Make sure
+you followed the step above to load up the MIDI server.
+
+It is also possible that your MIDI ports did not link up correctly. In the
+`./lib/jarvis/server.rb` file there is a line that looks like this:
+
+   fork { `aconnect 129:0 128:0` }
+
+This line is creating a new process to connect a MIDI input to a MIDI output,
+because MIDI inputs need to be told where to send their output to. It's entirely
+possible that these numbers will need to be changed on your machine. To list
+your MIDI outputs, run this command:
 
     $ aconnect -ol
 
-Which lists MIDI outputs. To list inputs:
+If you have Timidity running, it should be showing that it's running on 128:0 to
+128:3. I believe those are its defaults. You'll need to be running jarvis to see
+what input port it is using, do that with this command:
 
     $ aconnect -il
 
-You need to take the two port numbers and connect them up. I don't fully
-understand the process just yet, I just know that it is necessary and the
-numbers don't seem to change for me every time, so hard coding it in was a
-simple solution that I aim to fix before the final version that I hand in at the
-end of the project.
+Once you know both MIDI ports, you can alter the line of code in the fork block
+accordingly. Input comes first, then output.
+
+# Using the default jarvis-client
+
+The default jarvis-client is just an EventMachine keyboard listener. It listens
+for keyboard input and then sends messages to the server every time you hit
+enter.
+
+To start music, use:
+
+    start
+
+To stop music, use:
+
+    stop
+
+To load a new note generator use:
+
+    load GeneratorName
+
+Replacing generator name for a class in the `./lib/jarvis/generators/`
+directory.
