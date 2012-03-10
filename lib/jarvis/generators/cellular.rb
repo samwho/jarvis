@@ -1,6 +1,6 @@
 require 'colored'
 
-class CellularAutonoma
+class CellularAutonoma < NoteGenerator
   include ::MIDIator::Notes
   def initialize density = 0.4
     # Construct the "world" grid (16x12)

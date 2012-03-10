@@ -1,4 +1,4 @@
-class Random
+class Random < NoteGenerator
   include ::MIDIator::Notes
 
   def next

@@ -21,6 +21,13 @@ on how you implement the `next` method, different music will be generated.
 What this project wants to explore is the different methods of implementing that
 `next` method.
 
+# Why Ruby 1.8.7?
+
+Unfortunately it seems like the MIDIator Ruby library only runs under Ruby
+1.8.7. I haven't been able to find a way around this. If MIDIator updates to
+support the latest version of Ruby and I'm a bit slow on the uptake, please let
+me know.
+
 # How to Run
 
 Currently this code is only tested on my own machine. Theoretically, if you have

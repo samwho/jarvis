@@ -1,4 +1,4 @@
-class Scale
+class Scale < NoteGenerator
   include ::MIDIator::Notes
   attr_accessor :speed, :octave
 

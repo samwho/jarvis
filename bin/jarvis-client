@@ -18,6 +18,12 @@ class Echo < EM::Connection
 
   def receive_data(data)
     puts data
+    print "jarvis-client> "
+    STDOUT.flush
+  end
+
+  def unbind
+    EventMachine.stop_event_loop
   end
 end
 
@@ -40,4 +46,7 @@ EM.run do
 
   EM.connect('127.0.0.1', 1337, Echo, q)
   EM.open_keyboard(KeyboardHandler, q)
+
+  print "jarvis-client> "
+  STDOUT.flush
 end

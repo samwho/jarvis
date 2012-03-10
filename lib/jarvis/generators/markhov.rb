@@ -1,6 +1,6 @@
 require 'json'
 
-class MarkhovChains
+class MarkhovChains < NoteGenerator
   def initialize path = 'note-database.ndb', lookahead = 0
     @data      = JSON.parse File.open(path) { |file| file.read }
     @lookahead = 0
