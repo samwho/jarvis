@@ -77,27 +77,26 @@ come across most often is that I've forgotten to run the MIDI server. Make sure
 you followed the step above to load up the MIDI server.
 
 It is also possible that your MIDI ports did not link up correctly. In the
-`./lib/jarvis/server.rb` file there is a line that looks like this:
+`./lib/jarvis/server.rb` file there is some code that looks like this:
 
 ````
-   fork { `aconnect 129:0 128:0` }
+    aconnect = `aconnect -il`
+    m = aconnect.match /Client-([0-9]+)/
+    fork { `aconnect #{m[0]}:0 TiMidity:0` }
+    Process.wait
 ````
 
-This line is creating a new process to connect a MIDI input to a MIDI output,
-because MIDI inputs need to be told where to send their output to. It's entirely
-possible that these numbers will need to be changed on your machine. To list
-your MIDI outputs, run this command:
+These lines are trying to figure out what client the program is in the list of
+MIDI inputs and connect them up to Timidity. If you _arent_ running Timidity as
+your software synth, you will need to change the TiMidity:0 part of the fork
+line to something different.
 
-    $ aconnect -ol
+To figure out what your MIDI synth is called, run this command:
 
-If you have Timidity running, it should be showing that it's running on 128:0 to
-128:3. I believe those are its defaults. You'll need to be running jarvis to see
-what input port it is using, do that with this command:
+    aconnect -ol
 
-    $ aconnect -il
-
-Once you know both MIDI ports, you can alter the line of code in the fork block
-accordingly. Input comes first, then output.
+This lists your MIDI outputs. You should see whatever synth you use listed there
+and you can use its name in the fork line above.
 
 # It's complaining that it can't find libasound.so
 
