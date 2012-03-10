@@ -125,9 +125,12 @@ To load a new note generator use:
 
     jarvis-client> load GeneratorName
 
-To see a list of the available generators use:
+Replace `GeneratorName` with one of the available generators. To see a list of
+the available generators use:
 
     jarvis-client> generators
 
-Replacing generator name for a class in the `./lib/jarvis/generators/`
-directory.
+If you really want to, you can kill the server from the client with this
+command:
+
+    jarvis-client> kill_server
