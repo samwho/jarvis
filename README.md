@@ -105,7 +105,15 @@ The default `./bin/jarvis-client` is just an EventMachine keyboard listener. It 
 for keyboard input and then sends messages to the server every time you hit
 enter.
 
-To start music, use:
+To start the server (needs to be done first), run:
+
+    $ ./bin/jarvis
+
+To start the client, run this in another terminal:
+
+    $ ./bin/jarvis-client
+
+Then you will be dropped into a jarvis-client prompt. To start music, use:
 
     jarvis-client> start
 
@@ -116,6 +124,10 @@ To stop music, use:
 To load a new note generator use:
 
     jarvis-client> load GeneratorName
+
+To see a list of the available generators use:
+
+    jarvis-client> generators
 
 Replacing generator name for a class in the `./lib/jarvis/generators/`
 directory.
