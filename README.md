@@ -1,7 +1,7 @@
-# The First Prototype
+# Jarvis
 
-The first prototype of my final year project, affectionately named Jarvis,
-demonstrates the client server model and a modular approach to generating notes.
+The Jarvis project is part of my final year project at university to create a
+way of generating audio with code.
 
 # Client Server Model
 
