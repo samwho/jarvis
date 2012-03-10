@@ -81,8 +81,9 @@ module Jarvis
       @midi.autodetect_driver
 
       # Connect the MIDI input to the MIDI output.
-      # This is going to vary from machine to machine.
-      fork { `aconnect 129:0 128:0` }
+      aconnect = `aconnect -il`
+      m = aconnect.match /Client-([0-9]+)/
+      fork { `aconnect #{m[0]}:0 TiMidity:0` }
       Process.wait
 
       @thread = Thread.new(generator, @midi) do |g, m|
