@@ -18,7 +18,7 @@ class Echo < EM::Connection
 
   def receive_data(data)
     puts data
-    print "jarvis-client> "
+    print "jarvis-client> ".blue
     STDOUT.flush
   end
 
@@ -47,6 +47,6 @@ EM.run do
   EM.connect('127.0.0.1', 1337, Echo, q)
   EM.open_keyboard(KeyboardHandler, q)
 
-  print "jarvis-client> "
+  print "jarvis-client> ".blue
   STDOUT.flush
 end

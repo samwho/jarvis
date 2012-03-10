@@ -1,6 +1,60 @@
 #!/usr/bin/env ruby
 
 require File.dirname(__FILE__) + '/../lib/jarvis.rb'
+require 'colored'
+
+# Set option defaults
+Jarvis.options[:logfile] = STDOUT
+Jarvis.options[:ip] = "127.0.0.1"
+Jarvis.options[:port] = 1337
+
+# Parse command line args
+OptionParser.new do |opts|
+  opts.on('-s', '--seed SEED', 'Seed for the random number generator') do |s|
+    Jarvis.options[:seed] = s.to_i
+    srand Jarvis.options[:seed]
+  end
+
+  opts.on('-l', '--log FILE', 'File to log server output to.') do |file|
+    Jarvis.options[:logfile] = file
+  end
+
+  opts.on('--no-welcome') do
+    Jarvis.options[:nowelcome] = true
+  end
+
+  opts.on('-p', '--port PORT', 'Port number of Jarvis server.') do |port|
+    Jarvis.options[:port] = port.to_i
+  end
+
+  opts.on('-i', '--ip IP', 'IP address of Jarvis server.') do |ip|
+    Jarvis.options[:ip] = ip
+  end
+end.parse!
+
+# Set the logger format
+Jarvis.log.formatter = proc do |severity, datetime, progname, msg|
+  result = "[#{severity.ljust(5)} #{datetime}]: #{msg}\n"
+
+  if Jarvis.options[:logfile] == STDOUT
+    case severity
+    when "DEBUG"
+      result.blue
+    when "WARN"
+      result.yellow
+    when "ERROR"
+      result.red
+    else
+      result
+    end
+  else
+    result
+  end
+end
+
+Jarvis.log.debug "Options hash dump: #{Jarvis.options.inspect}"
+
+Jarvis.log.info "Starting server..."
 
 EventMachine::run do
   # hit Control + C to stop
@@ -8,5 +62,6 @@ EventMachine::run do
   Signal.trap("TERM") { EventMachine.stop }
 
   EventMachine::start_server "127.0.0.1", 1337, Jarvis::MusicServer
-  puts `cowsay -f tux "Welcome to Jarvis."`
+  puts `cowsay -f tux "Welcome to Jarvis."` unless Jarvis.options[:nowelcome]
+  Jarvis.log.info "Server started."
 end

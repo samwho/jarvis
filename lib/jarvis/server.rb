@@ -8,26 +8,14 @@ module Jarvis
     def initialize *args
       super
 
-      # Set option defaults
-      Jarvis.options[:logfile] = STDOUT
-
-      # Parse command line args
-      OptionParser.new do |opts|
-        opts.on('-s', '--seed SEED', 'Seed for the random number generator') do |s|
-          Jarvis.options[:seed] = s.to_i
-          srand Jarvis.options[:seed]
-        end
-
-        opts.on('-l', '--log FILE', 'File to log server output to.') do |file|
-          Jarvis.options[:logfile] = file
-        end
-      end.parse!
-
       # Declare a default generator.
       @generator = ::MarkhovChains.new
       @thread = nil
+    end
 
-      Jarvis.log.info "Server booted successfully."
+    # Called whenever a client disconnects.
+    def unbind
+      Jarvis.log.info "Client disconnected."
     end
 
     # This method will be called in the event of a server shutdown.
@@ -62,10 +50,15 @@ module Jarvis
         class_name = data.split(' ')[1]
 
         begin
+          from = @generator.class.name
           @generator = Module.const_get(class_name).new
+          to = @generator.class.name
           send_data "Loaded generator #{class_name}"
+          Jarvis.log.info "Switched from generator #{from} to generator #{to}"
         rescue Exception => e
-          send_data "Could not load class #{class_name}: #{e}"
+          message = "Could not load class #{class_name}: #{e}"
+          Jarvis.log.error message
+          send_data message
         end
       when "kill_server"
         kill_server
@@ -107,6 +100,8 @@ module Jarvis
         Jarvis.log.debug "Killing existing generator thread."
         @thread.kill
         @midi.driver.close
+      else
+        Jarvis.log.debug "kill_generator_thread called but generator thread is already dead."
       end
     end
   end
