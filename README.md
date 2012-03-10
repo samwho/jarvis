@@ -99,6 +99,15 @@ what input port it is using, do that with this command:
 Once you know both MIDI ports, you can alter the line of code in the fork block
 accordingly. Input comes first, then output.
 
+# It's complaining that it can't find libasound.so
+
+This is because you don't have the ALSA development libraries. On Arch Linux I
+never came across this problem but a friend on Fedora had to do:
+
+    yum install alsa-lib-devel
+
+To overcome the problem. This may differ depending on your distribution.
+
 # Using the default jarvis-client
 
 The default `./bin/jarvis-client` is just an EventMachine keyboard listener. It listens

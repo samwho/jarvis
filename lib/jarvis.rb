@@ -2,7 +2,8 @@ require 'rubygems'
 require 'eventmachine'
 require 'midiator'
 
-# Require all files in the main lib directory
+require File.dirname(__FILE__) + '/jarvis/generators/abstract.rb'
+
 Dir[File.dirname(__FILE__) + '/jarvis/generators/*.rb'].each do |file|
   require file
 end
