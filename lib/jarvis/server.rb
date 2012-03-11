@@ -63,7 +63,12 @@ module Jarvis
       when "kill_server"
         kill_server
       else
-        send_data @generator.handle_input(data)
+        gen_return = @generator.handle_input(data)
+        if gen_return.nil?
+          send_data "Command '#{data}' not recognised."
+        else
+          send_data gen_return
+        end
       end
     end
 

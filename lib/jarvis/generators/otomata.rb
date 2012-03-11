@@ -3,6 +3,7 @@ class Otomata < NoteGenerator
     @x = x
     @y = y
     @grid = generate_grid
+    @scale = Scale.c_major
   end
 
   # Generates a 2 dimensional array, x by y elements, all empty arrays. Just a
@@ -19,10 +20,27 @@ class Otomata < NoteGenerator
   end
 
   def next
-    print_grid
-    next_generation!
+    notes = []
 
-    return Note.new
+    @x.times do |x|
+      if @grid[x][0].length > 0 or @grid[x][@y - 1].length > 0
+        notes << @scale[x]
+      end
+    end
+
+    @y.times do |y|
+      if @grid[0][y].length > 0 or @grid[@x - 1][y].length > 0
+        notes << @scale[y]
+      end
+    end
+
+    print_grid
+
+    Thread.exclusive do
+      next_generation!
+    end
+
+    return Note.new notes, Note.length(2)
   end
 
   # Gets the next generation of the otomata grid. Deals with moving all of the
@@ -44,6 +62,7 @@ class Otomata < NoteGenerator
 
             @grid[x][y].delete node
 
+            # Don't want to introduce nil elements into the grid.
             new_direction = reverse_direction(node)
             @grid[x][y] << new_direction unless new_direction.nil?
           end
@@ -53,6 +72,7 @@ class Otomata < NoteGenerator
         if @grid[x][y].length > 1
           new_nodes = []
           @grid[x][y].each do |node|
+            # Don't want to introduce nil elements into the grid
             new_direction = rotate_direction(node)
             new_nodes << new_direction unless new_direction.nil?
           end
@@ -109,6 +129,8 @@ class Otomata < NoteGenerator
     end
   end
 
+  # Takes a node and gets the textual representation of that node to be printed
+  # out on the grid. For example, up is ^, down is V and so on.
   def text_representation node
     return ' ' unless node.is_a? Array
     return ' ' if node.length == 0
@@ -166,7 +188,13 @@ class Otomata < NoteGenerator
       input = input.split(' ')
       x = input[1].to_i
       y = input[2].to_i
-      poke x, y
+
+      if x >= 0 and x < @x and y >= 0 and y < @y
+        poke_value = poke x, y
+        "Poked #{x}, #{y}. New value: #{poke_value}."
+      else
+        "Invalid co-ordinates: x = #{x}, y = #{y}"
+      end
     end
   end
 
