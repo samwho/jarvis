@@ -8,6 +8,8 @@ Jarvis.options[:logfile] = STDOUT
 Jarvis.options[:ip] = "127.0.0.1"
 Jarvis.options[:port] = 1337
 
+Thread.abort_on_exception = true
+
 # Parse command line args
 OptionParser.new do |opts|
   opts.on('-s', '--seed SEED', 'Seed for the random number generator') do |s|

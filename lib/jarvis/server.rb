@@ -100,8 +100,9 @@ module Jarvis
             n = g.next
             m.play n.note, n.duration
           end
-        rescue e
+        rescue Exception => e
           Jarvis.log.error "Generator thread died: #{e}"
+          Jarvis.log.debug "Generator thread backtrace: #{e.backtrace.join("\n")}"
         end
       end
     end
