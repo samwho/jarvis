@@ -40,15 +40,19 @@ code online or, if you use RVM, you can use this command:
 
     $ rvm install 1.8.7
 
-When you've done that, you'll need to have the Bundler gem installed. You can
-install it like so:
+When you've done that, switch to Ruby 1.8.7 like so:
 
-    $ gem install bundler
+    $ rvm use 1.8.7
 
-If you're using RVM, I recommend having Bundler in your global gemset:
+Then, switch to the global gemset and install bundler:
 
     $ rvm gemset use global
     $ gem install bundler
+
+Then create a gemset for Jarvis:
+
+    $ rvm gemset create jarvis
+    $ rvm gemset use jarvis
 
 Then run bundler when inside the same directory as this README file:
 
@@ -128,7 +132,7 @@ Yeah. Whoops. Cowsay is just a simple program that displays a cow (or another
 animal) saying something in a speech bubble. Just a bit of fun. Two ways to fix
 this: install cowsay:
 
-    $ apy-get install cowsay
+    $ apt-get install cowsay
 
 Or run Jarvis with the `--no-welcome` flag:
 
