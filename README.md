@@ -57,12 +57,22 @@ Then run bundler when inside the same directory as this README file:
 
 That will install all of the required gems.
 
-Then start up the `timidity` MIDI software synthesiser like so:
+Then you will need to run some kind of MIDI synthesiser. I very much recommend
+using "Timidity". To install, do one of the following:
+
+    # Ubuntu
+    apt-get install timidity++
+    # Fedora
+    yum install timidity++
+    # Arch
+    pacman -S timidity++
+
+Then run it as a server like so:
 
     $ timidity -iA
 
-Timidity++ should come as standard on Ubuntu. On Arch, I had to install it with
-`pacman -S timidity++`.
+Timidity will just sit there waiting for input then. You will need to open a new
+terminal to run the next command and leave Timidity as it is.
 
 Then you should be able to run the `./bin/jarvis` server fine. Nothing will play
 at first, you need to connect to the server with a client by running
