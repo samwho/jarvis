@@ -47,7 +47,7 @@ Jarvis.log.formatter = proc do |severity, datetime, progname, msg|
     when "ERROR"
       result.red
     else
-      result
+      result.white
     end
   else
     result
