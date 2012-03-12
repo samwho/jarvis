@@ -87,9 +87,19 @@ module Jarvis
 
       # Connect the MIDI input to the MIDI output.
       fork do
-        aconnect = `aconnect -il`
-        m = aconnect.match /Client-([0-9]+)/
-        result = `aconnect #{m[0]}:0 TiMidity:0 2>&1`
+        aconnectil = `aconnect -il`
+        aconnectol = `aconnect -ol`
+
+        input = aconnectil.match /Client-([0-9]+)/
+        output = nil
+
+        if aconnectol =~ /TiMidity/
+          output = 'TiMidity'
+        elsif aconnectol =~ /FLUID Synth/
+          output = "\"#{aconnectol.match(/(FLUID Synth \([0-9]+\))/)[0]}\""
+        end
+
+        result = `aconnect #{input[0]}:0 #{output}:0 2>&1`
         if result.length != 0
           Jarvis.log.error "Aconnect failed: #{result.strip}"
           Jarvis.log.error "You might not have a software synth, e.g. Timidity, running."

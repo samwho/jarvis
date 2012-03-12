@@ -22,20 +22,32 @@ class Otomata < NoteGenerator
   def next
     notes = []
 
+    # Scan the edges of the grid for nodes that have something in them, then
+    # convert that to a note using the @scale instance variable.
     @x.times do |x|
-      if @grid[x][0].length > 0 or @grid[x][@y - 1].length > 0
+      if @grid[x][@y - 1].length > 0 and @grid[x][@y - 1].include? :down
+        notes << @scale[x]
+      end
+      if @grid[x][0].length > 0 and @grid[x][0].include? :up
         notes << @scale[x]
       end
     end
-
     @y.times do |y|
-      if @grid[0][y].length > 0 or @grid[@x - 1][y].length > 0
+      if @grid[@x - 1][y].length > 0 and @grid[@x - 1][y].include? :right
+        notes << @scale[y]
+      end
+      if @grid[0][y].length > 0 and @grid[0][y].include? :left
         notes << @scale[y]
       end
     end
 
+    # Prints the grid out, mainly to visualise the process and make sure there
+    # are no bugs. Probably will make a switch to stop the grid printing in the
+    # end.
     print_grid
 
+    # Make sure nothing interferes with the processing of the next generation of
+    # the grid. Doing so can occasionally cause issues.
     Thread.exclusive do
       next_generation!
     end
@@ -53,6 +65,18 @@ class Otomata < NoteGenerator
 
     @x.times do |x|
       @y.times do |y|
+        # If there are more than one nodes on a square, rotate them.
+        if @grid[x][y].length > 1
+          new_nodes = []
+          @grid[x][y].each do |node|
+            # Don't want to introduce nil elements into the grid
+            new_direction = rotate_direction(node)
+            new_nodes << new_direction unless new_direction.nil?
+          end
+
+          @grid[x][y] = new_nodes
+        end
+
         # If we are at an edge, reverse direction
         @grid[x][y].each do |node|
           if (x == 0      and node == :left) or
@@ -66,18 +90,6 @@ class Otomata < NoteGenerator
             new_direction = reverse_direction(node)
             @grid[x][y] << new_direction unless new_direction.nil?
           end
-        end
-
-        # If there are more than one nodes on a square, rotate them.
-        if @grid[x][y].length > 1
-          new_nodes = []
-          @grid[x][y].each do |node|
-            # Don't want to introduce nil elements into the grid
-            new_direction = rotate_direction(node)
-            new_nodes << new_direction unless new_direction.nil?
-          end
-
-          @grid[x][y] = new_nodes
         end
 
         # Finally, perform the relevant moves
