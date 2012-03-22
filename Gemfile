@@ -1,6 +1,9 @@
 source :rubygems
 
-gem 'midiator'
+gem 'unimidi'
+gem 'alsa-rawmidi' # required for unimidi
+gem 'midi-jruby'   # required for unimidi
+gem 'midi-winmm'   # required for unimidi
 gem 'eventmachine'
 gem 'colored'
 gem 'json'
