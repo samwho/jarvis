@@ -22,6 +22,31 @@ module Jarvis::Generators
       raise "The 'handle_input' method has not been implemented yet."
     end
 
+    # Define a standard output for note generators. This is primarily for
+    # testing purposes. We don't really want to see all of the output of the
+    # note generators in a test environment.
+    def self.stdout
+      @@stdout ||= STDOUT
+    end
+
+    # Sets a new stdout object for note generators. In testing, this is set to
+    # /dev/null.
+    def self.stdout= newstdout
+      @@stdout = newstdout
+    end
+
+    # If note generators want to output to the screen, this lets them but it
+    # also gives us the freedom to silence those messages in testing.
+    def puts output
+      @@stdout.puts output
+    end
+
+  # If note generators want to output to the screen, this lets them but it
+    # also gives us the freedom to silence those messages in testing.
+    def print output
+      @@stdout.print output
+    end
+
     def self.inherited subclass
       # Split the class name on the module delimiter and only return the last
       # item, i.e. the actual class name of the generator.
