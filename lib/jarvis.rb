@@ -1,6 +1,11 @@
 require 'rubygems'
 require 'eventmachine'
-require 'unimidi'
+
+if RUBY_VERSION =~ /1.9/
+  require 'unimidi'
+else
+  require 'midiator'
+end
 
 require File.dirname(__FILE__) + '/jarvis/notes.rb'
 require File.dirname(__FILE__) + '/jarvis/generators/abstract.rb'

@@ -81,73 +81,18 @@ module Jarvis
       # Ensure there is no running generator thread
       kill_generator_thread
 
-      # Initiate the MIDI interface
-      @midi_output = UniMIDI::Output.first
-
-      # Connect the MIDI input to the MIDI output.
-      fork do
-        # Run the two aconnect calls to find input and output devices
-        aconnectil = `aconnect -il`
-        aconnectol = `aconnect -ol`
-
-        # The input is easy, it will be the first virtual midi device.
-        input = aconnectil.match(/(Virtual Raw MIDI [0-9]-[0-9])/)[0]
-
-        # Output is a little more tricky. It will depend on the synth server.
-        # The following code tries to search for common MIDI synths.
-        output = nil
-        if aconnectol =~ /TiMidity/
-          output = 'TiMidity'
-        elsif aconnectol =~ /FLUID Synth/
-          output = "#{aconnectol.match(/(FLUID Synth \([0-9]+\))/)[0]}"
-        end
-
-        # Perform the actual connection.
-        result = `aconnect "#{input}":0 "#{output}":0 2>&1`
-
-        # General logging of outcomes.
-        Jarvis.log.debug "Running aconnect: aconnect \"#{input}\":0 \"#{output}\":0 2>&1"
-        if result.length != 0
-          # aconnect's error message will contain the word "subscribed" when a
-          # connection already exists between the given input and output. No
-          # need to log this as an error.
-          if result.match /subscribed/
-            Jarvis.log.debug "Virtual input already linked to MIDI output."
-          else
-            Jarvis.log.error "Aconnect failed: #{result.strip}"
-            Jarvis.log.error "You might not have a software synth, e.g. Timidity, running."
-          end
-        end
+      # Initiate the MIDI interface depending on the version of Ruby being used.
+      if RUBY_VERSION =~ /1.8/
+        @midi = Jarvis::MIDIator.new
+      else
+        @midi = Jarvis::UniMIDI.new
       end
 
-      # Wait for the above fork to finish
-      Process.wait
-
-      @thread = Thread.new(generator, @midi_output) do |generator, output|
+      @thread = Thread.new(generator, @midi) do |generator, output|
         begin
           loop do
             # Get the next batch of notes from the generator.
-            note = generator.next
-            # Ensure that the notes are an array. Sometimes a generator will
-            # just return an integer value.
-            if note.notes.is_a?(Array)
-              notes = note.notes
-            else
-              notes = [note.notes]
-            end
-
-            # Note on for each note in the array.
-            notes.each do |note|
-              output.puts 0x90, note, 100
-            end
-
-            # Sleep to ensure duration.
-            sleep(note.duration)
-
-            # Note off for each note in the array.
-            notes.each do |note|
-              output.puts 0x80, note, 100
-            end
+            output.play_note generator.next
           end
         rescue Exception => e
           Jarvis.log.error "Generator thread died: #{e}"
@@ -162,8 +107,8 @@ module Jarvis
       unless @thread.nil? or !@thread.alive?
         Jarvis.log.debug "Killing existing generator thread."
         @thread.kill
-        @midi_output.close
-        @midi_output = nil
+        @midi.close
+        @midi = nil
       else
         Jarvis.log.debug "kill_generator_thread called but generator thread is already dead."
       end

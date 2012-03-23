@@ -1,7 +1,7 @@
 module Jarvis
   class Note
     include Notes
-    attr_accessor :notes, :duration
+    attr_accessor :notes, :duration, :velocity, :channel
 
     # Gets a note length based on the following formula:
     #   1 / 2 ^ note_length
@@ -27,9 +27,11 @@ module Jarvis
     SIXTEENTH    = Note.length 4
     THIRTYSECOND = Note.length 5
 
-    def initialize notes = C2, duration = QUARTER
+    def initialize notes = [], duration = QUARTER, velocity = 100, channel = 0
       @notes    = notes
       @duration = duration
+      @velocity = velocity
+      @channel  = channel
     end
   end
 end
