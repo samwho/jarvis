@@ -99,7 +99,7 @@ module Jarvis
         if aconnectol =~ /TiMidity/
           output = 'TiMidity'
         elsif aconnectol =~ /FLUID Synth/
-          output = "\"#{aconnectol.match(/(FLUID Synth \([0-9]+\))/)[0]}\""
+          output = "#{aconnectol.match(/(FLUID Synth \([0-9]+\))/)[0]}"
         end
 
         # Perform the actual connection.
