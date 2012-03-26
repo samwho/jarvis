@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
+import jarvis.exceptions.JarvisException;
 
 public class Jarvis {
     private Socket conn;
@@ -44,6 +45,16 @@ public class Jarvis {
      */
     public Jarvis(String host) throws JarvisException {
         this(host, 1337);
+    }
+
+    /**
+     * Initialise Jarvis with the host name "localhost" and the port number
+     * 1337.
+     *
+     * If there is no Jarvis server running, a JarvisException will be thrown.
+     */
+    public Jarvis() throws JarvisException {
+        this("localhost", 1337);
     }
 
     /**
@@ -131,6 +142,78 @@ public class Jarvis {
     }
 
     /**
+     * Increases the volume on the Jarvis server.
+     *
+     * @return int New volume.
+     */
+    public int volumeUp() throws JarvisException {
+        return Integer.parseInt(this.sendMessage("volume up"));
+    }
+
+    /**
+     * Decreases the volume on the Jarvis server.
+     *
+     * @return int New volume.
+     */
+    public int volumeDown() throws JarvisException {
+        return Integer.parseInt(this.sendMessage("volume down"));
+    }
+
+    /**
+     * Sets the volume on the Jarvis server. Be careful with values over 100.
+     *
+     * @return int New volume.
+     */
+    public int setVolume(int volume) throws JarvisException {
+        return Integer.parseInt(this.sendMessage("volume " + volume));
+    }
+
+    /**
+     * Gets the current volume from the Jarvis server.
+     *
+     * @return int Current volume.
+     */
+    public int getVolume() throws JarvisException {
+        return Integer.parseInt(this.sendMessage("volume"));
+    }
+
+    /**
+     * Increases the tempo on the Jarvis server.
+     *
+     * @return int New tempo.
+     */
+    public int tempoUp() throws JarvisException {
+        return Integer.parseInt(this.sendMessage("tempo up"));
+    }
+
+    /**
+     * Decreases the tempo on the Jarvis server.
+     *
+     * @return int New tempo.
+     */
+    public int tempoDown() throws JarvisException {
+        return Integer.parseInt(this.sendMessage("tempo down"));
+    }
+
+    /**
+     * Sets the tempo on the Jarvis server.
+     *
+     * @return int New tempo.
+     */
+    public int setTempo(int tempo) throws JarvisException {
+        return Integer.parseInt(this.sendMessage("tempo " + tempo));
+    }
+
+    /**
+     * Gets the current volume from the Jarvis server.
+     *
+     * @return int Current volume.
+     */
+    public int getTempo() throws JarvisException {
+        return Integer.parseInt(this.sendMessage("volume"));
+    }
+
+    /**
      * Closes all of the opened sockets and readers for this Jarvis server. Must
      * be called if you wish to discard of a Jarvis object.
      */
@@ -140,4 +223,3 @@ public class Jarvis {
         server.close();
     }
 }
-

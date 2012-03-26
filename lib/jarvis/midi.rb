@@ -20,6 +20,11 @@ module Jarvis
 
     def play_note note
       if note.is_a? Jarvis::Note
+        # Do note modifications from global variables.
+        note.velocity *= Jarvis.options[:volume].to_f / 100.0
+        note.duration *= 1.0 / (Jarvis.options[:tempo].to_f / 60.0)
+
+        # Send the note to the subclass implementation of play
         play note.notes, note.duration, note.velocity, note.channel
       else
         raise "Invalid argument type. Expected #{Jarvis::Note} got #{note.class}"

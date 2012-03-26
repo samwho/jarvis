@@ -41,13 +41,48 @@ module Jarvis
 
       case data
       when "stop"
+        # Stop the current note generator thread. Does nothing if a current note
+        # generator thread is running.
         stop_generator_thread
         send_data "Stopped successfully."
       when "start"
+        # Start a new note generator thread. Will close the current thread and
+        # start a new one if a thread ic currently running.
         start_new_generator_thread
         send_data "Started successfully."
       when "generators"
+        # Send a list of note generators back to the client.
         send_data Jarvis::Generators::NoteGenerator.generators.join("\n")
+      when /^volume/
+        # Modify the global volume.
+        data = data.split(' ')
+        case data[1]
+        when "up"
+          send_data Jarvis.options[:volume] += 5
+        when "down"
+          send_data Jarvis.options[:volume] -= 5
+        else
+          if data[1].to_i != 0
+            send_data Jarvis.options[:volume] = data[1].to_i
+          else
+            send_data Jarvis.options[:volume].to_s
+          end
+        end
+      when /^tempo/
+        # Modify the global tempo.
+        data = data.split(' ')
+        case data[1]
+        when "up"
+          send_data Jarvis.options[:tempo] += 5
+        when "down"
+          send_data Jarvis.options[:tempo] -= 5
+        else
+          if data[1].to_i != 0
+            send_data Jarvis.options[:tempo] = data[1].to_i
+          else
+            send_data Jarvis.options[:tempo].to_s
+          end
+        end
       when /^load/
         # This line loads a class based on the second word given in the load
         # command.

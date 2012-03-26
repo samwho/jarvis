@@ -204,6 +204,7 @@ module Jarvis::Generators
 
         if x >= 0 and x < @x and y >= 0 and y < @y
           poke_value = poke x, y
+          poke_value = "none" if poke_value == []
           "Poked #{x}, #{y}. New value: #{poke_value}."
         else
           "Invalid co-ordinates: x = #{x}, y = #{y}"

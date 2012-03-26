@@ -7,6 +7,8 @@ require 'colored'
 Jarvis.options[:logfile] = STDOUT
 Jarvis.options[:ip] = "127.0.0.1"
 Jarvis.options[:port] = 1337
+Jarvis.options[:volume] = 100
+Jarvis.options[:tempo] = 80
 
 Thread.abort_on_exception = true
 
