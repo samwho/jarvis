@@ -80,7 +80,13 @@ public class Jarvis {
                 }
             }
 
-            return new String(buffer, 0, offset);
+            String toReturn = new String(buffer, 0, offset);
+
+            if (toReturn.startsWith("ERROR")) {
+                throw new JarvisException(toReturn);
+            } else {
+                return toReturn;
+            }
         } catch (IOException e) {
             throw new JarvisException(e);
         }
@@ -106,6 +112,32 @@ public class Jarvis {
      */
     public void stop() throws JarvisException {
         this.sendMessage("stop");
+    }
+
+    /**
+     * This method will completely shut down the server process. Use with
+     * extreme caution.
+     */
+    public void killServer() throws JarvisException {
+        this.sendMessage("kill_server");
+    }
+
+    /**
+     * Load a generator by name. If the generator does not exist, an exception
+     * will be thrown.
+     */
+    public void loadGenerator(String generator) throws JarvisException {
+        this.sendMessage("load " + generator);
+    }
+
+    /**
+     * Closes all of the opened sockets and readers for this Jarvis server. Must
+     * be called if you wish to discard of a Jarvis object.
+     */
+    public void close() throws IOException {
+        conn.close();
+        out.close();
+        server.close();
     }
 }
 

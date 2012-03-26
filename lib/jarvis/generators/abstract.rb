@@ -38,13 +38,13 @@ module Jarvis::Generators
     # If note generators want to output to the screen, this lets them but it
     # also gives us the freedom to silence those messages in testing.
     def puts output
-      @@stdout.puts output
+      self.class.stdout.puts output
     end
 
-  # If note generators want to output to the screen, this lets them but it
+    # If note generators want to output to the screen, this lets them but it
     # also gives us the freedom to silence those messages in testing.
     def print output
-      @@stdout.print output
+      self.class.stdout.print output
     end
 
     def self.inherited subclass

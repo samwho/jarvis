@@ -13,6 +13,10 @@ module Jarvis
       @thread = nil
     end
 
+    def send_error message
+      send_data "ERROR: " + message
+    end
+
     # Called whenever a client disconnects.
     def unbind
       Jarvis.log.info "Client disconnected."
@@ -58,14 +62,14 @@ module Jarvis
         rescue Exception => e
           message = "Could not load class #{class_name}: #{e}"
           Jarvis.log.error message
-          send_data message
+          send_error message
         end
       when "kill_server"
         kill_server
       else
         gen_return = @generator.handle_input(data)
         if gen_return.nil?
-          send_data "Command '#{data}' not recognised."
+          send_error "Command '#{data}' not recognised."
         else
           send_data gen_return
         end
@@ -99,7 +103,13 @@ module Jarvis
       end
     end
 
-    # Stops the @thread gracefully.
+    # Gracefully signals the current generator thread to stop. The generator
+    # thread will check its own Thread.current[:stop] variable after each note
+    # has finished. If this variable is true, the thread will exit on its own
+    # accord.
+    #
+    # This method calls @thread.join after signalling a stop, so this method
+    # blocks until the thread exits.
     def stop_generator_thread
       unless @thread.nil? or !@thread.alive?
         Jarvis.log.debug "Stopping existing generator thread."
