@@ -20,7 +20,7 @@ module Jarvis
 
     # This method will be called in the event of a server shutdown.
     def kill_server
-      kill_generator_thread
+      stop_generator_thread
       Jarvis.log.info "Server shutting down..."
       EventMachine.stop_event_loop
     end
@@ -37,7 +37,7 @@ module Jarvis
 
       case data
       when "stop"
-        kill_generator_thread
+        stop_generator_thread
         send_data "Stopped successfully."
       when "start"
         start_new_generator_thread
@@ -73,20 +73,24 @@ module Jarvis
     end
 
     # Instantiates a new thread and a new connection to the MIDI driver. This
-    # method will first call kill_generator_thead to ensure that there is no
+    # method will first call stop_generator_thead to ensure that there is no
     # existing thread with an existing connection to the MIDI driver.
     def start_new_generator_thread generator = @generator
       Jarvis.log.debug "Starting a new generator thread."
 
       # Ensure there is no running generator thread
-      kill_generator_thread
+      stop_generator_thread
 
 
       @thread = Thread.new(generator, Jarvis::MIDI.instance) do |generator, output|
+        Thread.current[:stop] = false
+
         begin
           loop do
             # Get the next batch of notes from the generator.
             output.play_note generator.next
+
+            Thread.exit if Thread.current[:stop]
           end
         rescue Exception => e
           Jarvis.log.error "Generator thread died: #{e}"
@@ -95,14 +99,14 @@ module Jarvis
       end
     end
 
-    # Kills the @thread and closes the connection to the MIDI driver, in that
-    # order.
-    def kill_generator_thread
+    # Stops the @thread gracefully.
+    def stop_generator_thread
       unless @thread.nil? or !@thread.alive?
-        Jarvis.log.debug "Killing existing generator thread."
-        @thread.kill
+        Jarvis.log.debug "Stopping existing generator thread."
+        @thread[:stop] = true
+        @thread.join
       else
-        Jarvis.log.debug "kill_generator_thread called but generator thread is already dead."
+        Jarvis.log.debug "stop_generator_thread called but generator thread is already dead."
       end
     end
   end
