@@ -1,5 +1,15 @@
 module Jarvis
   class MIDI
+    attr_accessor :closed
+
+    def self.instance
+      @@instance ||= if RUBY_VERSION =~ /1.8/
+                       Jarvis::MIDIator.new
+                     else
+                       Jarvis::UniMIDI.new
+                     end
+    end
+
     def initialize
       connect
     end

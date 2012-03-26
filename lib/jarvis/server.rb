@@ -81,14 +81,8 @@ module Jarvis
       # Ensure there is no running generator thread
       kill_generator_thread
 
-      # Initiate the MIDI interface depending on the version of Ruby being used.
-      if RUBY_VERSION =~ /1.8/
-        @midi = Jarvis::MIDIator.new
-      else
-        @midi = Jarvis::UniMIDI.new
-      end
 
-      @thread = Thread.new(generator, @midi) do |generator, output|
+      @thread = Thread.new(generator, Jarvis::MIDI.instance) do |generator, output|
         begin
           loop do
             # Get the next batch of notes from the generator.
@@ -107,8 +101,6 @@ module Jarvis
       unless @thread.nil? or !@thread.alive?
         Jarvis.log.debug "Killing existing generator thread."
         @thread.kill
-        @midi.close
-        @midi = nil
       else
         Jarvis.log.debug "kill_generator_thread called but generator thread is already dead."
       end
