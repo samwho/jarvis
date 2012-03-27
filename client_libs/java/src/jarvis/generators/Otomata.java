@@ -10,8 +10,20 @@ public class Otomata extends AbstractGenerator {
   public static int LEFT = 4;
   public static int RIGHT = 8;
 
+  public Otomata(String host, int port) throws JarvisException {
+    super(host, port);
+  }
+
+  public Otomata(String host) throws JarvisException {
+    super(host);
+  }
+
   public Otomata(Jarvis j) throws JarvisException {
     super(j);
+  }
+
+  public Otomata() throws JarvisException {
+    super();
   }
 
   public int poke(int x, int y) throws JarvisException {

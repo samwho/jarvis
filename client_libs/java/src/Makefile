@@ -1,5 +1,5 @@
 #
-# Makefile created at Mon Mar 26 21:34:12 2012, by mmake
+# Makefile created at Mon Mar 26 23:01:02 2012, by mmake
 #
 
 # Programs (with common options):
@@ -107,7 +107,8 @@ PACKAGES = \
 	jarvis.test \
 	jarvis \
 	jarvis.exceptions \
-	jarvis.generators
+	jarvis.generators \
+	examples
 
 
 # All packages that can be recursively compiled.
@@ -405,4 +406,5 @@ jarvis.test : $(call PACKAGE_OBJS,jarvis.test)
 jarvis : $(call PACKAGE_OBJS,jarvis)
 jarvis.exceptions : $(call PACKAGE_OBJS,jarvis.exceptions)
 jarvis.generators : $(call PACKAGE_OBJS,jarvis.generators)
+examples : $(call PACKAGE_OBJS,examples)
 

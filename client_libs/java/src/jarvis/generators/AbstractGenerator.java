@@ -9,8 +9,8 @@ public abstract class AbstractGenerator {
 
     /**
      * Sub classes of this abstract generator should try and ensure that they
-     * always call this constructor with a valid Jarvis object when they are
-     * creating new constructors.
+     * always call a constructor with a valid Jarvis object or parameters when
+     * they are creating new constructors.
      *
      * This constructor takes the Jarvis object passed in and stores it into a
      * protected variable called "jarvis", ready for use in later methods.
@@ -28,6 +28,33 @@ public abstract class AbstractGenerator {
     public AbstractGenerator(Jarvis j) throws JarvisException {
         this.jarvis = j;
         load();
+    }
+
+    /**
+     * This constructor creates the generator object with a brand new internal
+     * Jarvis object. This makes it count as a new client connection every time.
+     *
+     * Read the documentation for the 1 parameter constructor for more details
+     * on what this constructor actually does.
+     */
+    public AbstractGenerator() throws JarvisException {
+        this(new Jarvis());
+    }
+
+    /**
+     * This constructor creates the internal Jarvis object and passes it a
+     * custom host and port in case the defaults aren't correct.
+     */
+    public AbstractGenerator(String host, int port) throws JarvisException {
+        this(new Jarvis(host, port));
+    }
+
+    /**
+     * This constructor creates the internal Jarvis object and passes it a
+     * custom host but still uses the default port of 1337.
+     */
+    public AbstractGenerator(String host) throws JarvisException {
+        this(new Jarvis(host));
     }
 
     /**
