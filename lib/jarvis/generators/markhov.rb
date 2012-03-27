@@ -2,15 +2,23 @@ require 'json'
 
 module Jarvis::Generators
   class MarkhovChains < NoteGenerator
-    def initialize path = 'note-database.ndb', lookahead = 0
+    def initialize path = 'data/db2.ndb', lookahead = 0
       @data      = JSON.parse File.open(path) { |file| file.read }
       @lookahead = 0
     end
 
     def next
+      # Get a random number between 0 and the sum of all counts in the note
+      # database file specified to the constructor.
       r = rand sum_counts
       d = @data.each
 
+      # Loop through the JSON nodes and subtract the count in that node from the
+      # random number generated above. If the random number falls below 0,
+      # return this node.
+      #
+      # This is basically just a method of selecting a random node from the note
+      # database file.
       node = loop do
         n  = d.next
         r -= n[1]['count']
@@ -20,9 +28,16 @@ module Jarvis::Generators
         end
       end
 
+      # Get a random number between 0 and the sum of all of the durations in the
+      # random node selected above.
       r = rand(sum_durations(node))
       d = node[1]['durations'].each
 
+      # Loop through all of the durations in the node and subtract the number of
+      # times that duration has occurred from the random number generated above.
+      #
+      # Similar to the above loop, this is just a way of selecting a random
+      # duration from the selected node.
       duration = loop do
         n  = d.next
         r -= n[1]
@@ -32,11 +47,21 @@ module Jarvis::Generators
         end
       end
 
-      Jarvis::Note.new node[0].to_i, duration / 100.0
+      # Because durations are not specified in midi time pulses in the note
+      # database file, we need to divide the number by something. 10 sound good
+      # to me.
+      Jarvis::Note.new create_notes(node[0]), duration / 10.0
     end
 
     def handle_input input
 
+    end
+
+    # Because chords are represented as string of comma separated integers in
+    # the Markhov Chain note data format, this function will split them and
+    # convert it into an actual array of integers.
+    def create_notes note_string
+      note_string.split(',').map { |n| n.to_i }
     end
 
     # Returns the sum of the 'count' elements in each data entry in the

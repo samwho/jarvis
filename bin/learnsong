@@ -3,6 +3,8 @@
 require 'rubygems'
 require 'json'
 
+# Gets the midigram of either a midi file or an abc file. Involves calling
+# external commands.
 def get_midigram path
   if File.exists? path
     if path =~ /.mid(i)?$/
@@ -13,13 +15,49 @@ def get_midigram path
   end
 end
 
+# Takes a midigram line and returns the information in an easy to use hash that
+# looks a bit like this:
+#
+# {
+#   :on       => 68881,
+#   :off      => 69120,
+#   :track    => 3,
+#   :channel  => 3,
+#   :note     => 62,
+#   :duration => 75
+# }
+#
+# For more information you can do "man midi2abc" and search for "midigram".
 def get_midigram_line_info line
-  s = line.split ' '
+  # Split the line at spaces
+  s = line.split(' ')
+
+  # The end line contains 1 element, we want to return nil on that eventuality.
+  return nil if s.length < 6
 
   {
+    :on       => s[0],
+    :off      => s[1],
+    :track    => s[2],
+    :channel  => s[3],
     :note     => s[4],
     :duration => s[5]
   }
+end
+
+# Takes an array of node hashes and converts them into a simple string that will
+# represent a chord. Example:
+#
+# nodes = [
+#   { :note => 24 },
+#   { :note => 43 },
+#   { :note => 44 }
+# ]
+#
+# get_chord_name_from_nodes nodes
+# #=> "24,43,44"
+def get_chord_name_from_nodes nodes
+  nodes.map { |node| node[:note] }.sort.join(',')
 end
 
 # Command line args check
@@ -32,19 +70,45 @@ end
 new_song  = get_midigram ARGV.shift
 data_file = ARGV.shift
 
-# Check if the data file exists, do processing
+# Checks to see if file exists. If it does, it loads the existing JSON data into
+# a Hash object, if not is creates a new Hash object. This means that existing
+# data will be added to instead of being overwritten.
 if File.exists? data_file
   data = JSON.parse File.open(data_file, 'r') { |file| file.read }
 else
   data = Hash.new
 end
 
+# Declare a nodes variable to hold notes that were turned on and turned off at
+# the same time.
+nodes = []
+
 new_song.split(/\n/).each do |line|
+  # Convert the line into more meaningful info. See the get_midigram_line_info
+  # method for more information on that it does.
   info = get_midigram_line_info line
-  next if info[:note].to_i <= 0
 
-  node = data[info[:note]]
+  # Continue with the next iteration of the loop if the get_midigram_line_info
+  # method returned nil.
+  next if info.nil?
 
+  # This conditional block will group all elements that are turned on at the
+  # same time into "chord" arrays. So we can recognise chords in the midigram.
+  if nodes.length == 0
+    nodes << info
+    next
+  elsif nodes.last[:on] == info[:on]
+    nodes << info
+    next
+  end
+
+  # Get the node hash name from the array of chords that was gathered in the
+  # conditional block above.
+  chord_name = get_chord_name_from_nodes(nodes)
+  node = data[chord_name]
+
+  # This is defensive programming that is necessary to preserve existing data if
+  # it does exist.
   node = {} unless node.is_a? Hash
   node['count'] = 0 unless node['count']
   node['count'] += 1
@@ -53,7 +117,11 @@ new_song.split(/\n/).each do |line|
   node['durations'][info[:duration]] = 0 unless node['durations'][info[:duration]]
   node['durations'][info[:duration]] += 1
 
-  data[info[:note]] = node
+  data[chord_name] = node
+
+  # Reset the nodes array so that a new chord can be formed.
+  nodes = []
 end
 
+# Write the resulting data structure to file.
 File.open(data_file, 'w+') { |file| file.write JSON.pretty_generate(data) }
