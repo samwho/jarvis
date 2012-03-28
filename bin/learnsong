@@ -60,6 +60,20 @@ def get_chord_name_from_nodes nodes
   nodes.map { |node| node[:note] }.sort.join(',')
 end
 
+def add_info_to_node info, node
+  # This is defensive programming that is necessary to preserve existing data if
+  # it does exist.
+  node = {} unless node.is_a? Hash
+  node['count'] = 0 unless node['count']
+  node['count'] += 1
+
+  node['durations'] = {} unless node['durations']
+  node['durations'][info[:duration]] = 0 unless node['durations'][info[:duration]]
+  node['durations'][info[:duration]] += 1
+
+  return node
+end
+
 # Command line args check
 if ARGV.length < 2
   puts "Usage: learnsong song.mid database.ndb"
@@ -83,6 +97,9 @@ end
 # the same time.
 nodes = []
 
+# This array will hold the original song data but grouped into chords.
+chords = []
+
 new_song.split(/\n/).each do |line|
   # Convert the line into more meaningful info. See the get_midigram_line_info
   # method for more information on that it does.
@@ -102,25 +119,32 @@ new_song.split(/\n/).each do |line|
     next
   end
 
-  # Get the node hash name from the array of chords that was gathered in the
-  # conditional block above.
-  chord_name = get_chord_name_from_nodes(nodes)
-  node = data[chord_name]
+  # Add the grouped nodes into the chord array.
+  chords << nodes
 
-  # This is defensive programming that is necessary to preserve existing data if
-  # it does exist.
-  node = {} unless node.is_a? Hash
-  node['count'] = 0 unless node['count']
-  node['count'] += 1
-
-  node['durations'] = {} unless node['durations']
-  node['durations'][info[:duration]] = 0 unless node['durations'][info[:duration]]
-  node['durations'][info[:duration]] += 1
-
-  data[chord_name] = node
-
-  # Reset the nodes array so that a new chord can be formed.
+  # Reset the nodes array so it can be used again properly.
   nodes = []
+end
+
+chords.each_cons(3) do |chord, next_chord, next_next_chord|
+  chord_name = get_chord_name_from_nodes(chord)
+  next_chord_name = get_chord_name_from_nodes(next_chord)
+  next_next_chord_name = get_chord_name_from_nodes(next_next_chord)
+
+  data[chord_name] = add_info_to_node chord.last, data[chord_name]
+
+  # Handle next node (lookahead 1)
+  next_node = data[chord_name]["next"] || {}
+  next_node[next_chord_name] = add_info_to_node(next_chord.last,
+                                                next_node[next_chord_name])
+  data[chord_name]["next"] = next_node
+
+  # Handle next next node (lookahead 2)
+  next_next_node = data[chord_name]["next"][next_chord_name]["next"] || {}
+  next_next_node[next_next_chord_name] =
+    add_info_to_node(next_next_chord.last,
+                     next_next_node[next_next_chord_name])
+  data[chord_name]["next"][next_chord_name]["next"] = next_next_node
 end
 
 # Write the resulting data structure to file.
