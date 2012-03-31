@@ -3,7 +3,7 @@ package jarvis.generators;
 import jarvis.exceptions.JarvisException;
 import jarvis.Jarvis;
 
-public class Otomata extends AbstractGenerator {
+public class Otomata extends Jarvis {
   public static int NONE = 0;
   public static int UP = 1;
   public static int DOWN = 2;
@@ -18,16 +18,12 @@ public class Otomata extends AbstractGenerator {
     super(host);
   }
 
-  public Otomata(Jarvis j) throws JarvisException {
-    super(j);
-  }
-
   public Otomata() throws JarvisException {
     super();
   }
 
   public int poke(int x, int y) throws JarvisException {
-    String response = jarvis.sendMessage("poke " + x + " " + y);
+    String response = this.sendMessage("poke " + x + " " + y);
     if (response.startsWith("Invalid co-ordinates")) {
       throw new JarvisException(response);
     } else if (response.endsWith("up.")) {

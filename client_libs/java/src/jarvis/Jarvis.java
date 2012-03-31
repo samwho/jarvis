@@ -30,6 +30,10 @@ public class Jarvis {
             out = new PrintWriter(conn.getOutputStream(), true);
             server = new BufferedReader(new InputStreamReader(conn.getInputStream()));
             buffer = new char[bufsize];
+
+            // If the current class is not called Jarvis, load it.
+            if (!this.getClass().getSimpleName().equals("Jarvis"))
+                this.loadGenerator(this.getClass().getSimpleName());
         } catch (UnknownHostException uhe) {
             throw new JarvisException("Could not connect to " + host + ":" + port, uhe);
         } catch (IOException ioe) {

@@ -8,11 +8,11 @@ public class AllTheGenerators {
     public static void main(String[] args) {
         try {
             // Initialise ALL the generators|
-            Random r = new Random(new Jarvis());
-            MarkhovChains m = new MarkhovChains(new Jarvis());
-            Otomata o = new Otomata(new Jarvis());
-            Scale s = new Scale(new Jarvis());
-            CellularAutonoma c = new CellularAutonoma(new Jarvis());
+            Random r = new Random();
+            MarkhovChains m = new MarkhovChains();
+            Otomata o = new Otomata();
+            Scale s = new Scale();
+            CellularAutonoma c = new CellularAutonoma();
 
             r.start();
             Thread.sleep(5000);

@@ -38,18 +38,14 @@ public class Usage {
              * If you don't like the default note generator that is being used, you
              * can wrap the Jarvis server in a new note generator.
              *
-             * All note generators take a Jarvis object as a parameter and will
-             * instantly load up the new generator when they are instantiated.
-             * Because of this, it is recommended that music is not playing when you
-             * load a new generator because the generators won't switch until the
-             * current one has been stopped.
+             * All note generators subclass Jarvis and will instantly load up
+             * the new generator when they are instantiated.
              */
-            Scale s = new Scale(j);
+            Scale s = new Scale();
 
             /*
              * All note generators can run methods that belong to the Jarvis object.
-             * The AbstractGenerator class automatically delegates calls with the
-             * same name as Jarvis object calls to the internal Jarvis object.
+             * Inheritance ftw.
              */
             s.start();
 
@@ -92,14 +88,6 @@ public class Usage {
              * time using different generators. The results may be difficult to
              * control but it's an interesting feature that's worth mentioning.
              *
-             * Also note below that we aren't passing any parameters to these
-             * generators. They aren't an exception to the rule, all generators
-             * will automatically create a new default Jarvis object if you
-             * don't pass one in. Alternately, you can pass in a host name and a
-             * port to create a Jarvis object with non default arguments:
-             *
-             *      Otomata o = new Otomata("host.example.com", 5656);
-             *
              * You cannot set individual volumes and tempos for each generator.
              * Setting volume or tempo for one will affect the volume or tempo
              * of the other.
@@ -124,7 +112,6 @@ public class Usage {
             r.close();
             o = null;
             r = null;
-
         } catch (JarvisException je) {
             System.out.println(je.getMessage());
         } catch (IOException ioe) {

@@ -10,12 +10,8 @@ import jarvis.generators.Otomata;
 class JarvisTest {
     public static void main(String[] args) {
         try {
-            Jarvis j = new Jarvis("localhost");
-            Otomata o = new Otomata(j);
-
-            o.load();
-
-            j.close();
+            Otomata o = new Otomata();
+            o.close();
         } catch (Exception e) {
             System.out.println(e.getMessage());
         }
