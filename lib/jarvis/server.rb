@@ -20,6 +20,7 @@ module Jarvis
     # Called whenever a client disconnects.
     def unbind
       Jarvis.log.info "Client disconnected."
+      stop_generator_thread
     end
 
     # This method will be called in the event of a server shutdown.
@@ -127,7 +128,7 @@ module Jarvis
         begin
           loop do
             # Get the next batch of notes from the generator.
-            output.play_note generator.next
+            output.play_note generator.next unless Jarvis.options[:testing]
 
             Thread.exit if Thread.current[:stop]
           end

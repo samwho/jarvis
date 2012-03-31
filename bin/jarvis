@@ -9,6 +9,7 @@ Jarvis.options[:ip] = "127.0.0.1"
 Jarvis.options[:port] = 1337
 Jarvis.options[:volume] = 100
 Jarvis.options[:tempo] = 80
+Jarvis.options[:testing] = false
 
 Thread.abort_on_exception = true
 
@@ -33,6 +34,10 @@ OptionParser.new do |opts|
 
   opts.on('-i', '--ip IP', 'IP address of Jarvis server.') do |ip|
     Jarvis.options[:ip] = ip
+  end
+
+  opts.on('-t', '--testing', 'Boot the server in testing mode.') do
+    Jarvis.options[:testing] = true
   end
 end.parse!
 
