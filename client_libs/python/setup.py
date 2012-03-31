@@ -1,9 +1,11 @@
 from distutils.core import setup
 
 setup(
-    name = 'Jarvis Python Library',
+    name = 'JarvisPythonLibrary',
     version = '0.1dev',
+    author = 'Sam Rose',
+    author_email = 'samwho@lbak.co.uk',
     packages = ['jarvis',],
-    license = 'MIT License'
+    license = 'LICENSE.txt',
     long_description = open('README.txt').read(),
 )
