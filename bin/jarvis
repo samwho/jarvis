@@ -4,13 +4,7 @@ require File.dirname(__FILE__) + '/../lib/jarvis.rb'
 require 'colored'
 
 # Set option defaults
-Jarvis.options[:logfile] = STDOUT
-Jarvis.options[:ip] = "127.0.0.1"
-Jarvis.options[:port] = 1337
-Jarvis.options[:volume] = 100
-Jarvis.options[:tempo] = 80
-Jarvis.options[:testing] = false
-
+Jarvis.options.merge!(Jarvis.option_defaults)
 Thread.abort_on_exception = true
 
 # Parse command line args
@@ -71,12 +65,10 @@ EventMachine::run do
   # hit Control + C to stop
   Signal.trap("INT")  do
     EventMachine.stop
-    Jarvis::MIDI.instance.close
   end
 
   Signal.trap("TERM") do
     EventMachine.stop
-    Jarvis::MIDI.instance.close
   end
 
   EventMachine::start_server Jarvis.options[:ip], Jarvis.options[:port],
@@ -86,3 +78,7 @@ EventMachine::run do
 
   Jarvis.log.info "Server started. Listening on #{Jarvis.options[:ip]}:#{Jarvis.options[:port]}."
 end
+
+# Cleanup
+Jarvis::MIDI.instance.close
+Jarvis.log.close

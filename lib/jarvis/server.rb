@@ -128,7 +128,7 @@ module Jarvis
         begin
           loop do
             # Get the next batch of notes from the generator.
-            output.play_note generator.next unless Jarvis.options[:testing]
+            output.play_note generator.next
 
             Thread.exit if Thread.current[:stop]
           end

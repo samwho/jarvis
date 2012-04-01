@@ -33,5 +33,9 @@ module Jarvis
       @velocity = velocity
       @channel  = channel
     end
+
+    def to_s
+      "notes=#{notes.inspect} duration=#{duration} channel=#{channel} velocity=#{velocity}"
+    end
   end
 end

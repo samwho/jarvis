@@ -11,7 +11,7 @@ module Jarvis
     end
 
     def initialize
-      connect
+      connect unless Jarvis.options[:testing]
     end
 
     def connect
@@ -24,8 +24,13 @@ module Jarvis
         note.velocity *= Jarvis.options[:volume].to_f / 100.0
         note.duration *= 1.0 / (Jarvis.options[:tempo].to_f / 60.0)
 
-        # Send the note to the subclass implementation of play
-        play note.notes, note.duration, note.velocity, note.channel
+        if Jarvis.options[:testing]
+          Jarvis.log.info "Playing note: " + note.to_s
+          sleep note.duration
+        else
+          # Send the note to the subclass implementation of play
+          play note.notes, note.duration, note.velocity, note.channel
+        end
       else
         raise "Invalid argument type. Expected #{Jarvis::Note} got #{note.class}"
       end
