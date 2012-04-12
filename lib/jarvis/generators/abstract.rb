@@ -50,7 +50,10 @@ module Jarvis::Generators
     def self.inherited subclass
       # Split the class name on the module delimiter and only return the last
       # item, i.e. the actual class name of the generator.
-      self.generators << subclass.name.split('::').last
+      simple_name = subclass.name.split('::').last
+      self.generators << simple_name
+
+      Jarvis.log.info "Loaded generator #{simple_name}"
     end
   end
 end

@@ -56,7 +56,11 @@ module Jarvis
         send_data Jarvis::Generators::NoteGenerator.generators.join("\n")
       when /^volume/
         # Modify the global volume.
-        data = data.split(' ')
+        data = data.strip.split(/\s+/)
+        if data.length == 1
+          return Jarvis.options[:volume].to_s
+        end
+
         case data[1]
         when "up"
           send_data Jarvis.options[:volume] += 5
@@ -66,12 +70,16 @@ module Jarvis
           if data[1].to_i != 0
             send_data Jarvis.options[:volume] = data[1].to_i
           else
-            send_data Jarvis.options[:volume].to_s
+            send_data "ERROR: Bad volume request for data #{data[1]}"
           end
         end
       when /^tempo/
         # Modify the global tempo.
-        data = data.split(' ')
+        data = data.strip.split(/\s+/)
+        if data.length == 1
+          return Jarvis.options[:tempo].to_s
+        end
+
         case data[1]
         when "up"
           send_data Jarvis.options[:tempo] += 5
@@ -81,7 +89,7 @@ module Jarvis
           if data[1].to_i != 0
             send_data Jarvis.options[:tempo] = data[1].to_i
           else
-            send_data Jarvis.options[:tempo].to_s
+            send_data "ERROR: Bad tempo request for data #{data[1]}"
           end
         end
       when /^load/

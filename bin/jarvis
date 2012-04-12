@@ -1,64 +1,15 @@
 #!/usr/bin/env ruby
 
+# Require the main dependency loading file.
 require File.dirname(__FILE__) + '/../lib/jarvis.rb'
-require 'colored'
 
-# Set option defaults
-Jarvis.options.merge!(Jarvis.option_defaults)
+# Tell threads to abort when they hit an exception.
 Thread.abort_on_exception = true
 
-# Parse command line args
-OptionParser.new do |opts|
-  opts.on('-s', '--seed SEED', 'Seed for the random number generator') do |s|
-    Jarvis.options[:seed] = s.to_i
-    srand Jarvis.options[:seed]
-  end
-
-  opts.on('-l', '--log FILE', 'File to log server output to.') do |file|
-    Jarvis.options[:logfile] = file
-  end
-
-  opts.on('--no-welcome') do
-    Jarvis.options[:nowelcome] = true
-  end
-
-  opts.on('-p', '--port PORT', 'Port number of Jarvis server.') do |port|
-    Jarvis.options[:port] = port.to_i
-  end
-
-  opts.on('-i', '--ip IP', 'IP address of Jarvis server.') do |ip|
-    Jarvis.options[:ip] = ip
-  end
-
-  opts.on('-t', '--testing', 'Boot the server in testing mode.') do
-    Jarvis.options[:testing] = true
-  end
-end.parse!
-
-# Set the logger format
-Jarvis.log.formatter = proc do |severity, datetime, progname, msg|
-  result = "[#{severity.ljust(5)} #{datetime}]: #{msg}\n"
-
-  # Only set the colour if the logger is going to stdout. We don't want colour
-  # information in log files.
-  if Jarvis.options[:logfile] == STDOUT
-    case severity
-    when "DEBUG"
-      result.blue
-    when "WARN"
-      result.yellow
-    when "ERROR"
-      result.red
-    else
-      result.white
-    end
-  else
-    result
-  end
-end
+# Parse the ARGV array and cleanly reset anything that needs it.
+Jarvis.parse_command_line_args
 
 Jarvis.log.debug "Options hash dump: #{Jarvis.options.inspect}"
-
 Jarvis.log.info "Starting server..."
 
 EventMachine::run do
