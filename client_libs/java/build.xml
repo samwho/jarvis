@@ -1,72 +1,76 @@
 <project name="Jarvis" basedir="." default="main">
 
-  <property name="src.dir"     value="src"/>
+    <property name="src.dir"        value="src"/>
+    <property name="build.dir"      value="build"/>
+    <property name="classes.dir"    value="${build.dir}/classes"/>
+    <property name="jar.dir"        value="${build.dir}/jar"/>
+    <property name="lib.dir"        value="lib"/>
+    <property name="test.dir"       value="test"/>
+    <property name="test-build.dir" value="${build.dir}/test"/>
+    <property name="test-lib.dir"   value="test-lib"/>
+    <property name="main-class"     value="jarvis.test.AllTheGenerators"/>
+    <property name="verbose"        value="false" />
 
-  <property name="build.dir"   value="build"/>
-  <property name="classes.dir" value="${build.dir}/classes"/>
-  <property name="jar.dir"     value="${build.dir}/jar"/>
-  <property name="lib.dir"     value="lib"/>
+    <path id="classpath.base">
+        <fileset dir="${lib.dir}">
+            <include name="**.jar" />
+        </fileset>
+    </path>
 
-  <property name="main-class"  value="jarvis.test.AllTheGenerators"/>
+    <path id="classpath.test">
+        <path refid="classpath.base" />
+        <pathelement location="${test-build.dir}"/>
+        <fileset dir="${test-lib.dir}">
+            <include name="**.jar" />
+        </fileset>
+        <fileset dir="${jar.dir}">
+            <include name="**.jar" />
+        </fileset>
+    </path>
 
-  <property name="test.dir" location="test" />
-  <property name="verbose" value="false" />
+    <target name="compile-test" depends="jar">
+        <mkdir dir="${test-build.dir}"/>
+        <javac srcdir="${test.dir}" destdir="${test-build.dir}"
+            verbose="${verbose}" >
 
-  <path id="classpath.base">
-  </path>
+            <classpath refid="classpath.test"/>
+        </javac>
+    </target>
 
-  <path id="classpath.test">
-    <pathelement location="${lib.dir}/junit-4.10.jar" />
-    <pathelement location="${test.dir}" />
-    <path refid="classpath.base" />
-  </path>
+    <target name="test" depends="compile-test">
+        <junit>
+            <classpath refid="classpath.test" />
+            <formatter type="brief" usefile="false" />
+            <batchtest>
+                <fileset dir="${test-build.dir}" includes="**/Test*.class" />
+            </batchtest>
+        </junit>
+    </target>
 
-  <target name="compile-test">
-    <javac srcdir="${test.dir}" verbose="${verbose}" >
-      <classpath refid="classpath.test"/>
-    </javac>
-  </target>
+    <target name="clean">
+        <delete dir="${build.dir}"/>
+    </target>
 
-  <target name="clean-test">
-    <delete verbose="${verbose}">
-      <fileset dir="${test.dir}" includes="**/*.class" />
-    </delete>
-  </target>
+    <target name="compile">
+        <mkdir dir="${classes.dir}"/>
+        <javac srcdir="${src.dir}" destdir="${classes.dir}"/>
+    </target>
 
-  <target name="test" depends="compile-test">
-    <junit>
-      <classpath refid="classpath.test" />
-      <formatter type="brief" usefile="false" />
-      <batchtest>
-        <fileset dir="${test.dir}" includes="**/Test*.class" />
-      </batchtest>
-    </junit>
-  </target>
+    <target name="jar" depends="compile">
+        <mkdir dir="${jar.dir}"/>
+        <jar destfile="${jar.dir}/${ant.project.name}.jar" basedir="${classes.dir}">
+            <manifest>
+                <attribute name="Main-Class" value="${main-class}"/>
+            </manifest>
+        </jar>
+    </target>
 
-  <target name="clean" depends="clean-test">
-    <delete dir="${build.dir}"/>
-  </target>
+    <target name="run" depends="jar">
+        <java jar="${jar.dir}/${ant.project.name}.jar" fork="true"/>
+    </target>
 
-  <target name="compile">
-    <mkdir dir="${classes.dir}"/>
-    <javac srcdir="${src.dir}" destdir="${classes.dir}"/>
-  </target>
+    <target name="clean-build" depends="clean,jar"/>
 
-  <target name="jar" depends="compile">
-    <mkdir dir="${jar.dir}"/>
-    <jar destfile="${jar.dir}/${ant.project.name}.jar" basedir="${classes.dir}">
-      <manifest>
-        <attribute name="Main-Class" value="${main-class}"/>
-      </manifest>
-    </jar>
-  </target>
-
-  <target name="run" depends="jar">
-    <java jar="${jar.dir}/${ant.project.name}.jar" fork="true"/>
-  </target>
-
-  <target name="clean-build" depends="clean,jar"/>
-
-  <target name="main" depends="clean,run"/>
+    <target name="main" depends="clean,run"/>
 
 </project>

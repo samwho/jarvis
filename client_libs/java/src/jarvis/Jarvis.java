@@ -131,15 +131,15 @@ public class Jarvis {
     /**
      * Tells the server to start playing music.
      */
-    public void start() throws JarvisException {
-        this.sendMessage("start");
+    public String start() throws JarvisException {
+        return this.sendMessage("start");
     }
 
     /**
      * Tells the server to stop playing music.
      */
-    public void stop() throws JarvisException {
-        this.sendMessage("stop");
+    public String stop() throws JarvisException {
+        return this.sendMessage("stop");
     }
 
     /**
@@ -227,7 +227,7 @@ public class Jarvis {
      * @return int Current volume.
      */
     public int getTempo() throws JarvisException {
-        return Integer.parseInt(this.sendMessage("volume"));
+        return Integer.parseInt(this.sendMessage("tempo"));
     }
 
     /**
