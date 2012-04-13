@@ -35,16 +35,21 @@ class Jarvis:
         except Exception as e:
             raise JarvisError(e.__str__())
 
+    def send_generator_message(self, message):
+        '''Sends a message from this class, automatically prepending the
+        generator prefix based on the class name.'''
+        return self.send_message(self.__class__.__name__ + '.' + message)
+
     def load(self, generator):
-        self.send_message("load " + str(generator))
+        return self.send_message("load " + str(generator))
 
     def start(self):
         '''Signals the server to start playing music.'''
-        self.send_message("start")
+        return self.send_message("start")
 
     def stop(self):
         '''Signals the server to stop playing music.'''
-        self.send_message("stop")
+        return self.send_message("stop")
 
     def volume(self, v = None):
         '''Sets or gets the global server volume. This method will return the
@@ -53,7 +58,7 @@ class Jarvis:
         if v == None:
             return int(self.send_message("volume"))
         else:
-            return int(self.send_message("volume" + str(v)))
+            return int(self.send_message("volume " + str(v)))
 
     def tempo(self, t = None):
         '''Sets or gets the global server tempo. This method will return the
@@ -62,7 +67,7 @@ class Jarvis:
         if t == None:
             return int(self.send_message("tempo"))
         else:
-            return int(self.send_message("tempo" + str(t)))
+            return int(self.send_message("tempo " + str(t)))
 
     def volume_up(self):
         '''This method will increase the volume by a small increment and return

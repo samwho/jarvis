@@ -12,7 +12,7 @@ class Otomata(Jarvis):
         '''Pokes a square on the Otomata grid, changing its state. If the
         current state is NONE, the new state is UP. From there, UP goes to
         RIGHT, RIGHT goes to DOWN, DOWN goes to LEFT and LEFT goes to NONE.'''
-        response = self.send_message("poke " + str(x) + " " + str(y))
+        response = self.send_generator_message("poke " + str(x) + " " + str(y))
         if response.endswith("up."):
             return self.UP
         elif response.endswith("down."):

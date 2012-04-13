@@ -1,0 +1,55 @@
+# Jarvis Python Client Library
+
+Welcome to the Jarvis Python client library! This library is designed to make
+programmatic interaction with a Jarvis server as easy as possible.
+
+# Usage
+
+To use the Python Jarvis client library, you can install it with Pip. At the
+moment, the library isn't in the PyPI so you will need to install it via the
+physical location of the file, which is in the `dist/` directory:
+
+    pip install dist/JarvisPythonLibrary-0.1dev.tar.gz
+
+After that, you can write a simple test script that will tell you whether or
+not the library is working:
+
+    from jarvis.core import Jarvis
+    from time import sleep
+
+    j = Jarvis()
+    j.start()
+    sleep(5)
+    j.stop()
+
+Make sure that you have a Jarvis server running locally before you execute this
+script. It should play notes from the default generator for 5 seconds and then
+stop. Congrats, it works!
+
+## Connection refused?
+
+If you get a connectino refused error, that simply means that you do not have
+a Jarvis server running.
+
+## No notes heard?
+
+If you hear no notes, that probably means either you don't have a software
+synth running or you are running a software synth that Jarvis does not know
+how to connect to. Timidity is the software synth that Jarvis is tested with.
+If it does not work with Timidity, get in touch on the GitHub page:
+http://github.com/samwho/jarvis
+
+# Automated Testing
+
+The Jarvis Python client library has an automated testing suite that can be
+run with the following command from the base directory:
+
+    ./test.sh
+
+This will automatically discover and run all rests in the `test/` directory.
+
+# More usage examples
+
+This library is still very young and usage examples have not yet been written.
+If you want to see how the library works, feel free to browse the source code.
+It isn't too complex and there is ample documentation to help you along.
