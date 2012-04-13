@@ -1,5 +1,3 @@
-require File.dirname(__FILE__) + '/spec_helper.rb'
-
 describe Jarvis::MusicServer do
   # Tell RSpec that we're in the server context. This will give us access to an
   # instance of MusicServer in the @jarvis instance variable and access to some
