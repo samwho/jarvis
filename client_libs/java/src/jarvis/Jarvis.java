@@ -108,6 +108,19 @@ public class Jarvis {
     }
 
     /**
+     * Because generators take commands in the format:
+     *
+     *    GeneratorName.command_name args
+     *
+     * This method automatically prepends the GeneratorName part, making it
+     * easier for subclasses of this class to send generator commands.
+     */
+    public String sendGeneratorMessage(String message) throws JarvisException {
+        String className = this.getClass().getSimpleName();
+        return this.sendMessage(className + "." + message);
+    }
+
+    /**
      * This method will return a string list of the available generators on the
      * Jarvis server that you are connected to.
      */

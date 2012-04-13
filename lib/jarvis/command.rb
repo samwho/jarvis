@@ -20,6 +20,18 @@ module Jarvis::Command
   # arguments should be in the same format as ARGV, namely a Shellwords parsed
   # array.
   def self.call name, server, args
+    # This block of code here checks to see if the correct generator is loaded
+    # for a specific command. For example, if someone runs Otomata.poke and the
+    # Scale generator is loaded, there will be unexpected results. We don't want
+    # that to happen.
+    split_name = name.split('.')
+    if split_name.length == 2
+      klass = Jarvis::Generators.const_get(split_name.first)
+      unless server.generator.is_a? klass
+        raise "Incorrect generator loaded for command #{name}."
+      end
+    end
+
     if self.list.keys.include? name
       case self[name].arity
       when 1

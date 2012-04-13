@@ -53,7 +53,7 @@ module Jarvis::Generators
     #
     # Now the client command "test" will return "Passed!" to the client.
     def self.server_command name, &block
-      Jarvis::Command.register name, &block
+      Jarvis::Command.register((self.name.split('::').last) + '.' + name, &block)
     end
 
     def self.inherited subclass

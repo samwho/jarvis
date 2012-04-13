@@ -34,6 +34,8 @@ require 'jarvis/generators/random'
 require 'jarvis/generators/scale'
 
 # Load user external generators.
-Dir[File.expand_path("~/.jarvis/generators/*.rb")].each do |file|
-  require file
+module Jarvis::Generators
+  Dir[File.expand_path("~/.jarvis/generators/*.rb")].each do |file|
+    require file
+  end
 end

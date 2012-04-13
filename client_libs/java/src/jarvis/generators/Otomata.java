@@ -23,7 +23,7 @@ public class Otomata extends Jarvis {
   }
 
   public int poke(int x, int y) throws JarvisException {
-    String response = this.sendMessage("poke " + x + " " + y);
+    String response = this.sendGeneratorMessage("poke " + x + " " + y);
     if (response.startsWith("Invalid co-ordinates")) {
       throw new JarvisException(response);
     } else if (response.endsWith("up.")) {
