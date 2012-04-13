@@ -200,17 +200,22 @@ module Jarvis::Generators
     # "Pokes" a cell in the grid, either turning it on if it's off, rotating it if
     # it's on and turning it off if it is at the end of its rotation.
     def poke x, y
-      case @grid[x][y].first
-      when nil
-        @grid[x][y][0] = :up
-      when :up
-        @grid[x][y][0] = :right
-      when :down
-        @grid[x][y][0] = :left
-      when :left
-        @grid[x][y] = []
-      when :right
-        @grid[x][y][0] = :down
+      if x >= 0 and x < @x and y >= 0 and y < @y
+        case @grid[x][y].first
+        when nil
+          @grid[x][y][0] = :up
+        when :up
+          @grid[x][y][0] = :right
+        when :down
+          @grid[x][y][0] = :left
+        when :left
+          @grid[x][y] = []
+        when :right
+          @grid[x][y][0] = :down
+        end
+      else
+        raise "Poke co-ordinates out of range: x = #{x}, y = #{y}." +
+          " Max: x = #{@x - 1}, y = #{@y - 1}."
       end
     end
 
@@ -221,12 +226,12 @@ module Jarvis::Generators
       x = x.to_i
       y = y.to_i
 
-      if x >= 0 and x < server.generator.x and y >= 0 and y < server.generator.y
+      begin
         poke_value = server.generator.poke x, y
         poke_value = "none" if poke_value == []
         server.send_data "Poked #{x}, #{y}. New value: #{poke_value}."
-      else
-        server.send_error "Invalid co-ordinates: x = #{x}, y = #{y}"
+      rescue Exception => e
+        server.send_error e.to_s
       end
     end
   end

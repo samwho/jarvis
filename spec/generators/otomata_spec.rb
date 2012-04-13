@@ -85,4 +85,13 @@ describe Jarvis::Generators::Otomata do
     @generator.grid[0][1].should == [:left]
     @generator.grid[1][2].should == [:down]
   end
+
+  it 'should throw an error when trying to poke a square outside of the grid' do
+    lambda do
+      @generator.poke 55, 55
+    end.should raise_error do |error|
+      error.to_s.should include('ERROR')
+      error.to_s.should include('55')
+    end
+  end
 end
