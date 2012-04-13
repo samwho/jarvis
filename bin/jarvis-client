@@ -1,6 +1,11 @@
 #!/usr/bin/env ruby
 
-require File.dirname(__FILE__) + '/../lib/jarvis.rb'
+if RUBY_VERSION =~ /1.8/
+  require 'rubygems'
+end
+
+require 'eventmachine'
+require 'colored'
 
 class Echo < EM::Connection
   attr_reader :queue

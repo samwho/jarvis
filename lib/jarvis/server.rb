@@ -3,16 +3,110 @@ require 'optparse'
 # Define the server module that will be used by EventMachine
 module Jarvis
   class MusicServer < EM::Connection
-    attr_accessor :generator
+    attr_accessor :generator, :thread, :last_client_command
 
     def initialize *args
       super
 
+      unless Jarvis.options[:server_commands_registered]
+        self.class.register_commands
+        Jarvis.options[:server_commands_registered] = true
+      end
+
       # Declare a default generator.
       @generator = Generators::MarkhovChains.new
+      @last_client_command = []
       @thread = nil
     end
 
+    def self.register_commands
+      Jarvis::Command.register "volume" do |server, args|
+        # Modify the global volume.
+        if args.length == 1
+          server.send_data Jarvis.options[:volume].to_s
+        else
+          case args[1]
+          when "up"
+            server.send_data Jarvis.options[:volume] += 5
+          when "down"
+            server.send_data Jarvis.options[:volume] -= 5
+          else
+            if args[1].to_i != 0
+              server.send_data Jarvis.options[:volume] = args[1].to_i
+            else
+              server.send_error "Bad volume request for data #{args[1]}"
+            end
+          end
+        end
+      end
+
+      Jarvis::Command.register "tempo" do |server, args|
+        # Modify the global tempo.
+        if args.length == 1
+          server.send_data Jarvis.options[:tempo].to_s
+        else
+          case args[1]
+          when "up"
+            server.send_data Jarvis.options[:tempo] += 5
+          when "down"
+            server.send_data Jarvis.options[:tempo] -= 5
+          else
+            if args[1].to_i != 0
+              server.send_data Jarvis.options[:tempo] = args[1].to_i
+            else
+              server.send_data "ERROR: Bad tempo request for data #{args[1]}"
+            end
+          end
+        end
+      end
+
+      Jarvis::Command.register "stop" do |server|
+        # Stop the current note generator thread. Does nothing if a current note
+        # generator thread is running.
+        server.stop_generator_thread
+        server.send_data "Stopped successfully."
+      end
+
+      Jarvis::Command.register "start" do |server|
+        # Start a new note generator thread. Will close the current thread and
+        # start a new one if a thread ic currently running.
+        server.start_new_generator_thread
+        server.send_data "Started successfully."
+      end
+
+      Jarvis::Command.register "generators" do |server|
+        # Send a list of note generators back to the client.
+        server.send_data Jarvis::Generators::NoteGenerator.generators.join("\n")
+      end
+
+      Jarvis::Command.register "load" do |server, args|
+        # This line loads a class based on the second word given in the load
+        # command.
+        class_name = args[1]
+
+        begin
+          from = server.generator.class.name
+          server.generator = Jarvis::Generators.const_get(class_name).new
+          to = server.generator.class.name
+          server.send_data "Loaded generator #{class_name}"
+          Jarvis.log.info "Switched from generator #{from} to generator #{to}"
+        rescue Exception => e
+          message = "Could not load class #{class_name}: #{e}"
+          Jarvis.log.error message
+          server.send_error message
+        end
+      end
+
+      Jarvis::Command.register "kill_server" do |server|
+        server.kill_server
+      end
+    end
+
+    # This method will prepend the string "ERROR: " to a message and then pass
+    # it to the send_data method. The point of this is that the client libraries
+    # search server reponses for "ERROR: " and will throw an exception if they
+    # find it. This makes sure that if you want to send an error, you just need
+    # to call this method and not worry about it.
     def send_error message
       send_data "ERROR: " + message
     end
@@ -39,84 +133,15 @@ module Jarvis
     # An EventMachine method that receives data from a connected client.
     def receive_data data
       Jarvis.log.debug "Data received from client: #{data}"
+      @last_client_command = Shellwords.shellwords(data)
 
-      case data
-      when "stop"
-        # Stop the current note generator thread. Does nothing if a current note
-        # generator thread is running.
-        stop_generator_thread
-        send_data "Stopped successfully."
-      when "start"
-        # Start a new note generator thread. Will close the current thread and
-        # start a new one if a thread ic currently running.
-        start_new_generator_thread
-        send_data "Started successfully."
-      when "generators"
-        # Send a list of note generators back to the client.
-        send_data Jarvis::Generators::NoteGenerator.generators.join("\n")
-      when /^volume/
-        # Modify the global volume.
-        data = data.strip.split(/\s+/)
-        if data.length == 1
-          return Jarvis.options[:volume].to_s
-        end
-
-        case data[1]
-        when "up"
-          send_data Jarvis.options[:volume] += 5
-        when "down"
-          send_data Jarvis.options[:volume] -= 5
-        else
-          if data[1].to_i != 0
-            send_data Jarvis.options[:volume] = data[1].to_i
-          else
-            send_data "ERROR: Bad volume request for data #{data[1]}"
-          end
-        end
-      when /^tempo/
-        # Modify the global tempo.
-        data = data.strip.split(/\s+/)
-        if data.length == 1
-          return Jarvis.options[:tempo].to_s
-        end
-
-        case data[1]
-        when "up"
-          send_data Jarvis.options[:tempo] += 5
-        when "down"
-          send_data Jarvis.options[:tempo] -= 5
-        else
-          if data[1].to_i != 0
-            send_data Jarvis.options[:tempo] = data[1].to_i
-          else
-            send_data "ERROR: Bad tempo request for data #{data[1]}"
-          end
-        end
-      when /^load/
-        # This line loads a class based on the second word given in the load
-        # command.
-        class_name = data.split(' ')[1]
-
-        begin
-          from = @generator.class.name
-          @generator = Jarvis::Generators.const_get(class_name).new
-          to = @generator.class.name
-          send_data "Loaded generator #{class_name}"
-          Jarvis.log.info "Switched from generator #{from} to generator #{to}"
-        rescue Exception => e
-          message = "Could not load class #{class_name}: #{e}"
-          Jarvis.log.error message
-          send_error message
-        end
-      when "kill_server"
-        kill_server
-      else
-        gen_return = @generator.handle_input(data)
-        if gen_return.nil?
-          send_error "Command '#{data}' not recognised."
-        else
-          send_data gen_return
-        end
+      begin
+        Jarvis::Command.call @last_client_command.first, self,
+          @last_client_command
+      rescue Exception => e
+        send_error e.to_s
+        Jarvis.log.error "Command threw an exception: #{e}"
+        Jarvis.log.debug "Command exception backtrace: #{e.backtrace.join("\n")}"
       end
     end
 

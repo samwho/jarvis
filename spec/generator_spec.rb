@@ -20,9 +20,5 @@ Jarvis::Generators::NoteGenerator.generators.each do |generator|
     it "should be of type NoteGenerator" do
       generator.should be_a Jarvis::Generators::NoteGenerator
     end
-
-    it "should implement an input handling method" do
-      lambda { generator.handle_input "test input" }.should_not raise_error
-    end
   end
 end

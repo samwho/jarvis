@@ -7,10 +7,6 @@ module Jarvis
 
         return note
       end
-
-      def handle_input input
-        "Random does not handle input."
-      end
     end
   end
 end

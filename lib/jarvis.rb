@@ -3,6 +3,8 @@ require 'eventmachine'
 require 'optparse'
 require 'colored'
 require 'logger'
+require 'shellwords'
+require 'pry'
 
 if RUBY_VERSION =~ /1.9/
   require 'unimidi'
@@ -15,6 +17,7 @@ libdir = File.dirname(__FILE__)
 $LOAD_PATH.unshift(libdir) unless $LOAD_PATH.include?(libdir)
 
 require 'jarvis/options'
+require 'jarvis/command'
 require 'jarvis/notes'
 require 'jarvis/note'
 require 'jarvis/scales'

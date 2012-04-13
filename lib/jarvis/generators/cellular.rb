@@ -164,9 +164,5 @@ module Jarvis::Generators
 
       note
     end
-
-    def handle_input input
-
-    end
   end
 end

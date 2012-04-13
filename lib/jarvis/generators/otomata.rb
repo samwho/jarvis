@@ -1,5 +1,7 @@
 module Jarvis::Generators
   class Otomata < NoteGenerator
+    attr_accessor :x, :y, :grid, :scale
+
     def initialize x = 8, y = 8
       @x = x
       @y = y
@@ -195,23 +197,6 @@ module Jarvis::Generators
       end
     end
 
-    def handle_input input
-      case input
-      when /^poke/
-        input = input.split(' ')
-        x = input[1].to_i
-        y = input[2].to_i
-
-        if x >= 0 and x < @x and y >= 0 and y < @y
-          poke_value = poke x, y
-          poke_value = "none" if poke_value == []
-          "Poked #{x}, #{y}. New value: #{poke_value}."
-        else
-          "Invalid co-ordinates: x = #{x}, y = #{y}"
-        end
-      end
-    end
-
     # "Pokes" a cell in the grid, either turning it on if it's off, rotating it if
     # it's on and turning it off if it is at the end of its rotation.
     def poke x, y
@@ -226,6 +211,22 @@ module Jarvis::Generators
         @grid[x][y] = []
       when :right
         @grid[x][y][0] = :down
+      end
+    end
+
+    # Register the "poke" command with the server and make it correctly access
+    # this current generator and call the above poke method.
+    server_command "poke" do |server, args|
+      command, x, y, *rest = args
+      x = x.to_i
+      y = y.to_i
+
+      if x >= 0 and x < server.generator.x and y >= 0 and y < server.generator.y
+        poke_value = server.generator.poke x, y
+        poke_value = "none" if poke_value == []
+        server.send_data "Poked #{x}, #{y}. New value: #{poke_value}."
+      else
+        server.send_error "Invalid co-ordinates: x = #{x}, y = #{y}"
       end
     end
   end

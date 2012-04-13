@@ -48,10 +48,6 @@ module Jarvis::Generators
       Jarvis::Note.new create_notes(node[0]), duration / 10.0
     end
 
-    def handle_input input
-
-    end
-
     # Selects a random node from a Hash based on the contents of the 'counts'
     # member on the has. Don't use this on any old hash, it need to be a hash in
     # the same format as what is created by the learnsong executable.

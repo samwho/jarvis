@@ -26,21 +26,24 @@ module Jarvis::Generators
       return note
     end
 
-    def handle_input input
-      case input
-      when "is"
-        @speed += 1
-        return "Speed increased."
-      when "ds"
-        @speed -= 1
-        return "Speed decreased."
-      when "io"
-        @octave += 1
-        return "Octave increased."
-      when "do"
-        @octave -= 1
-        return "Octave decreased."
-      end
+    server_command "is" do |server|
+      server.generator.speed += 1
+      server.send_data "Speed increased."
+    end
+
+    server_command "ds" do |server|
+      server.generator.speed -= 1
+      server.send_data "Speed decreased."
+    end
+
+    server_command "io" do |server|
+      server.generator.octave += 1
+      server.send_data "Octave increased."
+    end
+
+    server_command "do" do |server|
+      server.generator.octave -= 1
+      server.send_data "Octave decreased."
     end
   end
 end

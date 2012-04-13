@@ -1,40 +1,10 @@
 require File.dirname(__FILE__) + '/spec_helper.rb'
 
-# Because we aren't running the server inside event machine, we need to override
-# the send_data method so it just returns the message to be sent rather than
-# actually trying to send it anywhere.
-class Jarvis::MusicServer
-  def send_data data
-    return data.to_s
-  end
-end
-
 describe Jarvis::MusicServer do
-  before :each do
-    # Set option defaults and override testing to true
-    Jarvis.options = Jarvis.option_defaults
-    Jarvis.options[:logfile] = '/dev/null'
-    Jarvis.options[:testing] = true
-    Jarvis.log = Jarvis.default_logger
-
-    @jarvis = Jarvis::MusicServer.new nil
-    @last_response = nil
-  end
-
-  after :each do
-    @jarvis.unbind
-    @jarvis = nil
-  end
-
-  # Helper method to send a command to the Jarvis server.
-  def send_command command
-    @last_response = @jarvis.receive_data command
-  end
-
-  # Helper method to check the value of the last command sent.
-  def last_response
-    @last_response
-  end
+  # Tell RSpec that we're in the server context. This will give us access to an
+  # instance of MusicServer in the @jarvis instance variable and access to some
+  # specific helper methods.
+  include_context 'server'
 
   it 'responds to start' do
     send_command "start"

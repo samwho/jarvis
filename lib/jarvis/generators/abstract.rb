@@ -16,12 +16,6 @@ module Jarvis::Generators
       raise "The 'next' method has not been implemented yet."
     end
 
-    # Placeholder method. This should be overridden by extending classes. The
-    # default behaviour is to raise an exception.
-    def handle_input
-      raise "The 'handle_input' method has not been implemented yet."
-    end
-
     # Define a standard output for note generators. This is primarily for
     # testing purposes. We don't really want to see all of the output of the
     # note generators in a test environment.
@@ -45,6 +39,21 @@ module Jarvis::Generators
     # also gives us the freedom to silence those messages in testing.
     def print output
       self.class.stdout.print output
+    end
+
+    # Helper method for defining server commands inside note generators.
+    # Generators can now do the following to register a command with the server
+    # at load time:
+    #
+    #   class TestGenerator < NoteGenerator
+    #     server_command "test" do |server|
+    #       server.send_data "Passed!"
+    #     end
+    #   end
+    #
+    # Now the client command "test" will return "Passed!" to the client.
+    def self.server_command name, &block
+      Jarvis::Command.register name, &block
     end
 
     def self.inherited subclass
