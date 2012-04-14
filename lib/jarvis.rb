@@ -1,10 +1,13 @@
+module Jarvis
+  ROOTDIR = File.expand_path(File.dirname(__FILE__) + '/..')
+end
+
 require 'rubygems'
 require 'eventmachine'
 require 'optparse'
 require 'colored'
 require 'logger'
 require 'shellwords'
-require 'pry'
 
 if RUBY_VERSION =~ /1.9/
   require 'unimidi'
@@ -34,8 +37,6 @@ require 'jarvis/generators/random'
 require 'jarvis/generators/scale'
 
 # Load user external generators.
-module Jarvis::Generators
-  Dir[File.expand_path("~/.jarvis/generators/*.rb")].each do |file|
-    require file
-  end
+Dir[File.expand_path("~/.jarvis/generators/*.rb")].each do |file|
+  require file
 end

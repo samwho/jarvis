@@ -2,7 +2,7 @@ require 'json'
 
 module Jarvis::Generators
   class MarkhovChains < NoteGenerator
-    DEFAULT_NDB = File.dirname(__FILE__) + '/../../../data/db2.ndb'
+    DEFAULT_NDB = Jarvis::ROOTDIR + '/data/db2.ndb'
 
     def initialize path = DEFAULT_NDB, lookahead = 0
       @data      = JSON.parse File.open(path) { |file| file.read }

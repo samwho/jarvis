@@ -6,6 +6,22 @@ end
 
 require 'eventmachine'
 require 'colored'
+require 'optparse'
+
+# Declare options hash and supply defaults
+options = Hash.new(nil)
+options[:port] = 1337
+options[:host] = "127.0.0.1"
+
+OptionParser.new do |opts|
+  opts.on('-p', '--port PORT', 'Port number of Jarvis server.') do |port|
+    options[:port] = port.to_i
+  end
+
+  opts.on('--host HOST', 'The host address of the Jarvis server.') do |host|
+    options[:host] = host
+  end
+end.parse!
 
 class Echo < EM::Connection
   attr_reader :queue
@@ -53,7 +69,7 @@ EM.run do
 
   q = EM::Queue.new
 
-  EM.connect('127.0.0.1', 1337, Echo, q)
+  EM.connect(options[:host], options[:port], Echo, q)
   EM.open_keyboard(KeyboardHandler, q)
 
   print "jarvis-client> ".blue

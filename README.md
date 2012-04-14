@@ -1,175 +1,271 @@
 # Jarvis
 
 The Jarvis project is part of my final year project at university to create a
-way of generating audio with code.
+way of generating music with code.
 
-# Client Server Model
+The approach Jarvis takes is very high level. Inside note generators (explained
+in a moment) you can use expressive constants such as `MiddleC` and `E2` to
+reference notes.
 
-The idea behind this project is to have a music server running perpetually and
-have a client connect to the server and tell it what to do. The server will be
-able to generate music on the fly and the client will be able to control it in
-whatever way is supported by the current method of note generation.
+Jarvis makes use of MIDI to play notes. Because of this, Jarvis requires a MIDI
+synthesizer be installed and running to work. Two MIDI software synths are
+supported out of the box, [Timidity++](http://timidity.sourceforge.net/) and
+[qsynth](http://qsynth.sourceforge.net/qsynth-index.html). Both are open source
+and likely to be in your Linux distribution's repositories.
 
-# Note Generation
+# Install
 
-The note generation method is very modular. Thanks to Ruby's ability to have
-objects duck typed, all the note generator classes need to do currently is
-supply a `next` method that returns a Note object. Through this rather elegant
-interface, it is possible to generate music that is indefinitely long. Depending
-on how you implement the `next` method, different music will be generated.
+First, make sure you have one of the two software synths listed above installed.
+Both should be residing in your package manager, whatever system you are using.
+People have reported success with Mac but I have not personally tested it. If
+you run into problems or would like to explain the setup process on Mac, please
+feel free to open an issue or a pull request modifying this README.
 
-What this project wants to explore is the different methods of implementing that
-`next` method.
+Jarvis itself is packaged up nicely as a RubyGem. Installation is quick and
+easy:
 
-# Why Ruby 1.8.7?
+    gem install jarvis
 
-Unfortunately it seems like the MIDIator Ruby library only runs under Ruby
-1.8.7. I haven't been able to find a way around this. If MIDIator updates to
-support the latest version of Ruby and I'm a bit slow on the uptake, please let
-me know.
+**It is recommended that you use the Ruby 1.8 series to run Jarvis.** The reason
+why is explained in the FAQ file in this directory.
 
-# How to Run
+# Running
 
-Currently this code is only tested on my own machine. Theoretically, if you have
-a MIDI software synthesizer, Ruby 1.8 installed and the required gems
-(eventmachine and midiator) it should work, but I'm guessing that in practice it
-is probably going to be a tad harder to achieve cross compatibility.
+Jarvis ships with a number of note generators already installed as part of the
+core library. The academic reason is because that was what my research was on;
+different ways of generating notes.
 
-First thing you need to do is have Ruby 1.8.7 installed. You can acquire the
-code online or, if you use RVM, you can use this command:
+Academic talk aside, to run Jarvis you need to first make sure either Timidity
+or qsynth is running. One of these should suffice:
 
-    $ rvm install 1.8.7
-
-When you've done that, switch to Ruby 1.8.7 like so:
-
-    $ rvm use 1.8.7
-
-Then, switch to the global gemset and install bundler:
-
-    $ rvm gemset use global
-    $ gem install bundler
-
-Then create a gemset for Jarvis:
-
-    $ rvm gemset create jarvis
-    $ rvm gemset use jarvis
-
-Then run bundler when inside the same directory as this README file:
-
-    $ cd path/to/jarvis/
-    $ bundle install
-
-That will install all of the required gems.
-
-Then you will need to run some kind of MIDI synthesiser. I very much recommend
-using "Timidity". To install, do one of the following:
-
-    # Ubuntu
-    apt-get install timidity++
-    # Fedora
-    yum install timidity++
-    # Arch
-    pacman -S timidity++
-
-Then run it as a server like so:
-
+    # Timidity
     $ timidity -iA
 
-Timidity will just sit there waiting for input then. You will need to open a new
-terminal to run the next command and leave Timidity as it is.
+    # qsynth
+    $ qsynth
 
-Then you should be able to run the `./bin/jarvis` server fine. Nothing will play
-at first, you need to connect to the server with a client by running
-`./bin/jarvis-client`. A default note generator will be loaded in (it isn't
-defined which will be the default at this moment in time). If you type "start"
-at the jarvis-client command line, music should start playing.
+Then run Jarvis itself:
 
-# I don't hear anything.
+    $ jarvis
 
-There are a wide variety of reasons that you might not hear anything. The one I
-come across most often is that I've forgotten to run the MIDI server. Make sure
-you followed the step above to load up the MIDI server.
+By default it starts listening on port 1337. You can change this with a command
+line argument:
 
-It is also possible that your MIDI ports did not link up correctly. In the
-`./lib/jarvis/server.rb` file there is some code that looks like this:
+    $ jarvis --port 9090
 
-````
-    aconnect = `aconnect -il`
-    m = aconnect.match /Client-([0-9]+)/
-    fork { `aconnect #{m[0]}:0 TiMidity:0` }
-    Process.wait
-````
+Then you run the keyboard client to connect to the server. If you listened on a
+different port with the server, the syntax is exactly the same to connect to a
+different port with the client:
 
-These lines are trying to figure out what client the program is in the list of
-MIDI inputs and connect them up to Timidity. If you _arent_ running Timidity as
-your software synth, you will need to change the TiMidity:0 part of the fork
-line to something different.
+    $ jarvis-client --port 9090
 
-To figure out what your MIDI synth is called, run this command:
+And from here, you should get a prompt that looks like this (and if you have a
+good terminal environment, should appear a light blue):
 
-    aconnect -ol
+    jarvis-client>
 
-This lists your MIDI outputs. You should see whatever synth you use listed there
-and you can use its name in the fork line above.
-
-# It's complaining that it can't find libasound.so
-
-This is because you don't have the ALSA development libraries.
-
-## Fedora Fix
-
-    yum install alsa-lib-devel
-
-## Ubuntu Fix
-
-    apt-get install libasound2-dev
-
-This is confirmed to work on 11.04.
-
-# It's complaining that it can't find the program 'cowsay'
-
-Yeah. Whoops. Cowsay is just a simple program that displays a cow (or another
-animal) saying something in a speech bubble. Just a bit of fun. Two ways to fix
-this: install cowsay:
-
-    $ apt-get install cowsay
-
-Or run Jarvis with the `--no-welcome` flag:
-
-    $ ./bin/jarvis --no-welcome
-
-# Using the default jarvis-client
-
-The default `./bin/jarvis-client` is just an EventMachine keyboard listener. It listens
-for keyboard input and then sends messages to the server every time you hit
-enter.
-
-To start the server (needs to be done first), run:
-
-    $ ./bin/jarvis
-
-To start the client, run this in another terminal:
-
-    $ ./bin/jarvis-client
-
-Then you will be dropped into a jarvis-client prompt. To start music, use:
+By default, a MarkhovChain generator is loaded up. This was part of my research
+and by default it doesn't sound too bad as an attempt to generate music. Try it
+out with:
 
     jarvis-client> start
 
-To stop music, use:
+If it starts to grate on you, which it might, you can stop it like so:
 
     jarvis-client> stop
 
-To load a new note generator use:
-
-    jarvis-client> load GeneratorName
-
-Replace `GeneratorName` with one of the available generators. To see a list of
-the available generators use:
+If you want to see a list of the generators that you can play with, try this
+command:
 
     jarvis-client> generators
 
-If you really want to, you can kill the server from the client with this
-command:
+This should give you a list of the default, core generators. But what about
+writing your own generators? This is where the fun begins.
 
-    jarvis-client> kill_server
+# Custom generators
+
+Writing custom generators is designed to be an easy process. One of the end
+goals of the system is that it should be easy to extend. When Jarvis boots, it
+scans the directory `~/.jarvis/generators/` for .rb files and loads them.
+Technically, they don't need to be generators but a little directory
+organisation never goes amiss.
+
+Here's the hello world of note generators:
+
+    class Jarvis::Generators::HelloWorld < Jarvis::Generators::NoteGenerator
+        def next
+            Jarvis::Note.new MiddleC
+        end
+    end
+
+If you save that under `~/.jarvis/generators/helloworld.rb` and fire up Jarvis:
+
+    $ jarvis
+
+Then fire up a Jarvis client:
+
+    $ jarvis-client
+
+Load up this new generator:
+
+    jarvis-client> load HelloWorld
+
+And play:
+
+    jarvis-client> start
+
+You should hear a middle C note played over and over again. Huzzah! We're
+programming music.
+
+## What's happening under the hood
+
+We're going to take a brief detour here and explain what's happening inside
+Jarvis when you load and start your HelloWorld generator.
+
+When you boot the server, Jarvis uses a library called EventMachine to handle
+client connections. When a client connects via a socket or whatever it decides
+to connect via (the client libraries use sockets), EventMachine creates a new
+instance of an object called MusicServer, which is the object that handles
+sending message to the midi synth.
+
+Each MusicServer has two very important attributes: @generator and @thread. When
+you load a new generator, an instance of your generator class is stored inside
+@generator. Then, when you run the `start` command, a new thread is created that
+gets a copy of your @generator and start repeatedly polling its `next` method.
+
+Here's what the thread looks like:
+
+    @thread = Thread.new(@generator, Jarvis::MIDI.instance) do |generator, output|
+        loop do
+            output.play_note generator.next
+        end
+    end
+
+Error handling code has been omitted for brevity. The `Jarvis::MIDI.instance`
+call returns a singleton of the MIDI interface to the system, so only one MIDI
+interface can exist at any given time. This MIDI interface knows how to play
+`Jarvis::Note` objects, which have a number of useful attributes that we can
+set.
+
+## Anatomy of a Jarvis::Note
+
+A `Jarvis::Note` has the following attributes:
+
+    note = Jarvis::Note.new
+    note.notes
+    #=> By default, an empty array. Add notes to this array to form chords.
+
+    note.duration
+    #=> By default, Jarvis::Note::QUARTER. Can be any floating point value.
+
+    note.velocity
+    #=> By default 100. Volume, basically.
+
+    note.channel
+    #=> By default 0. Advanced use, you won't need to worry about it.
+
+So we can control the key aspects of a note very easily through this object and
+the MIDI interface knows exactly how to deal with it.
+
+Note that while a note is playing, the thread sleeps. MIDI notes are "played" by
+a pair of note on and note off signals. The MIDI interface will fire a note on
+event, then sleep for the note.duration and then fire a note off event.
+
+## What is a note under the hood?
+
+It's an integer, plain and simple. In the MIDIator library by Ben Bleything,
+there was a class that had constants mapping a note's name to its integer
+representation in MIDI. This class has been copied over to Jarvis and can be
+found in `lib/jarvis/notes.rb` if you're curious :)
+
+# Hooking into the server from a note generator
+
+Note generators wouldn't be nearly as interesting if you couldn't interact with
+them. Because of this, Jarvis has a really nice way of hooking your own commands
+into the server. Let's see an example:
+
+    module Jarvis::Generators
+        class ServerHookExample < NoteGenerator
+            attr_accessor :note
+
+            def initialize
+                @note = MiddleC
+            end
+
+            def next
+                Jarvis::Note.new @note
+            end
+
+            server_command "change_note" do |server, args, generator|
+                note = Jarvis::Notes.const_get args[1]
+                generator.note = note
+                server.send_data "Note successfully changed to #{note}."
+            end
+        end
+    end
+
+Right, there's a lot of new stuff going on here so let's take it step by step.
+
+The first thing you might notice that is different is the call to "module" up at
+the top. This just makes things a little more readable in my opinion. No more
+fully qualified class names, we can work directly inside `Jarvis::Generators`.
+
+Next, we have a constructor. There's no magic going on here. As was explained
+earlier, note generators get instantiated when they're loaded via the `load`
+command, so you can still do any setup you need as normal inside the
+constructor. In this example, the constructor simply creates a default @note
+attribute. Also note that @note has an `attr_accessor` line at the top. This is
+important for later.
+
+The `next` method is more or less the same as it was inside the HelloWorld
+example, only this time we pass in the instance value @note instead of a
+constant. This is so we can change the note during playback.
+
+### The server_command
+
+This is the juicy bit: the call to `server_command`. This is a helper method
+that ties a command to the server for us. It takes a command name and then a
+block that represents what the command does.
+
+The block we pass in can take up to three arguments. The first argument will be
+the MusicServer object that handled the call to this command. The second
+argument will be the arguments that were passed to the command. The arguments
+work just like ARGV does. The first argument, `args[0]`, will be the name of the
+command itself. The rest of the array is the result of a call to Shellwords on
+the full command string received by the server. Look up Shellwords if you are
+uncertain. Lastly, the generator (which you can think of as a "this" keyword)
+gets passed in.
+
+Because the block gets stored elsewhere and called later on, you cannot just
+call instance methods as you would in a normal instance method. They need to be
+called via the `generator` block argument.
+
+### What does this command do?
+
+Well, the first thing it does is take the first argument, which will be a string
+(like all of the other arguments), and try and grab a note constant with it. The
+`const_get` method looks for a constant by that name and return it if it exists.
+
+Next, we simply set the @note attribute to the newly found note (error checking
+code has, again, been omitted for brevity. In a real world generator you would
+want to make sure the constant exists). So the next time the server thread polls
+the `next` method for a note, it will get the newly loaded one.
+
+Lastly, the command sends a string response back to the client.
+
+### How do I call this command?
+
+Generator commands get namespaced. The proper syntax for calling this new
+command is as follows:
+
+    jarvis-client> ServerHookExample.change_note E1
+
+Arguments are delimited with a space, like at the terminal. Not a comma, like in
+Ruby. If you want to include a space in your single argument, that works like
+the terminal too: wrap it in double quotes.
+
+## Go forth!
+
+This ends the whirlwind tour of using and extending Jarvis. Now you can go forth
+and generate cool music without needing to worry about interfacing with MIDI,
+manage threads and all that malarky :)
