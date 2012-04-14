@@ -90,6 +90,11 @@ scans the directory `~/.jarvis/generators/` for .rb files and loads them.
 Technically, they don't need to be generators but a little directory
 organisation never goes amiss.
 
+If you don't have a `~/.jarvis` directory don't worry, you're not supposed to
+have one. You can create it like so:
+
+    $ mkdir -p ~/.jarvis/generators
+
 Here's the hello world of note generators:
 
     class Jarvis::Generators::HelloWorld < Jarvis::Generators::NoteGenerator
@@ -116,6 +121,10 @@ And play:
 
 You should hear a middle C note played over and over again. Huzzah! We're
 programming music.
+
+If you get a message about uninitialised constants it probably means you had the
+server running before you saved the HelloWorld generator. A simple restart of
+Jarvis by closing it down with ctrl + c and reopening it should do the trick.
 
 ## What's happening under the hood
 

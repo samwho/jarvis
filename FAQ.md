@@ -96,6 +96,12 @@ To figure out what your MIDI synth is called, run this command:
 This lists your MIDI outputs. You should see whatever synth you use listed there
 and you can send me that output and ask me to add support for your synth server.
 
+## I can't hear anything and I'm using Timidity on Ubuntu
+
+It has been recently reported to me that timidity doesn't output sound on later
+versions of Ubuntu for some people. However, qsynth worked pretty much out of
+the box. It's a bigger download but it works.
+
 # It's complaining that it can't find libasound.so
 
 This is because you don't have the ALSA development libraries.
