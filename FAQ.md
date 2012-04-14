@@ -120,18 +120,6 @@ This is confirmed to work on 11.04. Other Ubuntu versions may vary.
 
     pacman -S alsa-lib
 
-# It's complaining that it can't find the program 'cowsay'
-
-Yeah. Whoops. Cowsay is just a simple program that displays a cow (or another
-animal) saying something in a speech bubble. Just a bit of fun. Two ways to fix
-this: install cowsay (adjust this line to fit whatever package manager you use):
-
-    $ apt-get install cowsay
-
-Or run Jarvis with the `--no-welcome` flag:
-
-    $ jarvis --no-welcome
-
 # Using the default jarvis-client
 
 The default `./bin/jarvis-client` is just an EventMachine keyboard listener. It listens

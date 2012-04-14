@@ -1,6 +1,6 @@
 Gem::Specification.new do |s|
   s.name = %q{jarvis}
-  s.version = "0.1.4"
+  s.version = "0.1.5"
   s.date = %q{2012-04-14}
   s.authors = ["Sam Rose"]
   s.email = %q{samwho@lbak.co.uk}
@@ -30,4 +30,5 @@ Gem::Specification.new do |s|
   s.add_dependency 'eventmachine'
   s.add_dependency 'colored'
   s.add_dependency 'json'
+  s.add_dependency 'ruby_cowsay'
 end

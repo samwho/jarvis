@@ -25,7 +25,7 @@ EventMachine::run do
   EventMachine::start_server Jarvis.options[:ip], Jarvis.options[:port],
     Jarvis::MusicServer
 
-  puts `cowsay -f tux "Welcome to Jarvis."` unless Jarvis.options[:nowelcome]
+  puts Cow.new.say "Welcome to Jarvis." unless Jarvis.options[:nowelcome]
 
   Jarvis.log.info "Server started. Listening on #{Jarvis.options[:ip]}:#{Jarvis.options[:port]}."
 end

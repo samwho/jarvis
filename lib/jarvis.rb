@@ -8,6 +8,7 @@ require 'optparse'
 require 'colored'
 require 'logger'
 require 'shellwords'
+require 'ruby_cowsay'
 
 if RUBY_VERSION =~ /1.9/
   require 'unimidi'

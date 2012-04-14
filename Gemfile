@@ -12,6 +12,7 @@ end
 gem 'eventmachine'
 gem 'colored'
 gem 'json'
+gem 'ruby_cowsay'
 
 group :development do
   gem 'pry'
