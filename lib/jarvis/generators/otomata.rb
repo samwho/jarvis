@@ -55,7 +55,7 @@ module Jarvis::Generators
         next_generation!
       end
 
-      return Jarvis::Note.new notes, Jarvis::Note.length(2)
+      return Jarvis::Note.new notes, 1.0
     end
 
     # Gets the next generation of the otomata grid. Deals with moving all of the

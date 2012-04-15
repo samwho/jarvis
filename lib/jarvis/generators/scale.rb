@@ -3,22 +3,14 @@ module Jarvis::Generators
     attr_accessor :speed, :octave
 
     def initialize
-      @notes   = [
-        Jarvis::Note.new(C0),
-        Jarvis::Note.new(D0),
-        Jarvis::Note.new(E0),
-        Jarvis::Note.new(F0),
-        Jarvis::Note.new(G0),
-        Jarvis::Note.new(A1),
-        Jarvis::Note.new(B1),
-        Jarvis::Note.new(C1)]
+      @notes   = Jarvis::Scale.c_major
       @pointer = 0
-      @speed = 1
-      @octave = 2
+      @speed   = 1
+      @octave  = 2
     end
 
     def next
-      note          = @notes[@pointer].dup
+      note          = Jarvis::Note.new @notes[@pointer]
       note.duration = Jarvis::Note.length @speed
       note.notes    = note.notes + 12 * octave
       @pointer      = (@pointer + 1).modulo(@notes.size)
