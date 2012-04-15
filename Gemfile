@@ -20,4 +20,5 @@ end
 
 group :testing do
   gem 'rspec'
+  gem 'rake'
 end
