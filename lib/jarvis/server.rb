@@ -156,7 +156,12 @@ module Jarvis
 
 
       @thread = Thread.new(generator, Jarvis::MIDI.instance) do |generator, output|
-        Thread.current[:stop] = false
+        # This following line caused a really interesting bug. If you sent the
+        # stop signal fast enough, this line would actually overwrite the stop
+        # value to false _after_ it had been set. Debugging this one was a
+        # massive pain and it only came out during testing in the Ruby 1.9
+        # series. 1.8.7 seems to handle the issue differently. Neat, huh?
+        # Thread.current[:stop] = false
 
         begin
           loop do
