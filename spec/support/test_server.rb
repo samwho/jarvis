@@ -1,3 +1,20 @@
+# This shared context sets up all of the appropriate methods and monkey patches
+# that are needed to create and use a MusicServer object without running it
+# through EventMachine.
+
+# Because we aren't running the server inside event machine, we need to override
+# the send_data method and keep track of the data that has been sent in the
+# current request.
+class Jarvis::MusicServer
+  def sent_data
+    @sent_data ||= []
+  end
+
+  def send_data data
+    sent_data << data.to_s
+  end
+end
+
 shared_context 'test_server' do
   # Helper method to send a command to the Jarvis server.
   def send_command command
