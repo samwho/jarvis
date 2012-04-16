@@ -21,4 +21,5 @@ end
 group :testing do
   gem 'rspec'
   gem 'rake'
+  gem 'ruby-ogginfo'
 end

@@ -1,32 +1,42 @@
+require 'socket'
+
 shared_context 'server' do
-  # Helper method to send a command to the Jarvis server.
-  def send_command command
-    @jarvis.receive_data command
-    @last_response = @jarvis.sent_data.last
+  @@jarvis_host = 'localhost'
+  @@jarvis_port = 1337
+
+  def start_jarvis
+    @@jarvis_pid = fork do
+      $stdout = File.open('/dev/null', 'w')
+      exec "#{Jarvis::ROOTDIR}/bin/jarvis"
+    end
+
+    sleep(1)
+    @@socket = TCPSocket.new @@jarvis_host, @@jarvis_port
   end
 
-  # Helper method to check the value of the last command sent.
+  def send_command command
+    @@socket.print command
+    @@last_response = @@socket.recv 4096
+  end
+
   def last_response
-    @last_response
+    @@last_response
+  end
+
+  def stop_jarvis
+    if @@jarvis_pid
+      @@socket.close if @@socket
+      Process.kill('SIGINT', @@jarvis_pid)
+      Process.wait(@@jarvis_pid)
+      @@jarvis_pid = nil
+    end
   end
 
   before :each do
-    # Set option defaults and override testing to true
-    Jarvis.options = Jarvis.option_defaults
-    Jarvis.options[:logfile] = '/dev/null'
-    Jarvis.options[:testing] = true
-    Jarvis.log = Jarvis.default_logger
-
-    # Reset the commands array. This stops duplicate command errors.
-    Jarvis::Command.reset
-
-    @jarvis = Jarvis::MusicServer.new nil
-    @last_response = nil
+    start_jarvis
   end
 
   after :each do
-    @jarvis.unbind
-    @jarvis = nil
+    stop_jarvis
   end
-
 end
