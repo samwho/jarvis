@@ -3,7 +3,7 @@ require 'timeout'
 
 shared_context 'server' do
   @@jarvis_host = 'localhost'
-  @@jarvis_port = 1337
+  @@jarvis_port = 12826
 
   # Starts up the external jarvis process and waits for it to boot. Then it
   # initiates a connection to the jarvis process under the @@socket variable.
@@ -11,7 +11,7 @@ shared_context 'server' do
   # Commands can be sent to this jarvis instance with the send_command method.
   def start_jarvis
     @@jarvis_pid = fork do
-      exec "#{Jarvis::ROOTDIR}/bin/jarvis"
+      exec "#{Jarvis::ROOTDIR}/bin/jarvis --port #{@@jarvis_port}"
     end
 
     sleep(1)
