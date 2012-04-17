@@ -76,7 +76,7 @@ public class Jarvis {
         int numread;
 
         try {
-            out.print(message);
+            out.print(message + ";");
             out.flush();
 
             /*
@@ -97,10 +97,10 @@ public class Jarvis {
 
             String toReturn = new String(buffer, 0, offset);
 
-            if (toReturn.startsWith("ERROR")) {
-                throw new JarvisException(toReturn);
+            if (toReturn.startsWith("ERROR: ")) {
+                throw new JarvisException(toReturn.trim());
             } else {
-                return toReturn;
+                return toReturn.trim();
             }
         } catch (IOException e) {
             throw new JarvisException(e);
