@@ -5,12 +5,12 @@ rvm:
     - 1.9.3
 
 before_install:
-    - sudo usermod -a -G audio $USER
     - sudo modprobe snd-seq-device
     - sudo modprobe snd-seq-midi
     # - sudo modprobe snd-seq-oss
     # - sudo modprobe snd-seq-midi-event
     - sudo modprobe snd-seq
+    - chmod a+rw /dev/snd/*
     - sudo apt-get update
     - sudo apt-get install libasound2-dev
     - sudo apt-get install alsa-utils
