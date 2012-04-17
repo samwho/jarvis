@@ -1,4 +1,5 @@
 require 'socket'
+require 'timeout'
 
 shared_context 'server' do
   @@jarvis_host = 'localhost'
@@ -20,8 +21,16 @@ shared_context 'server' do
   # Sends a command to the jarvis server that's running and returns the string
   # response from the server.
   def send_command command
-    @@socket.print command
-    @@last_response = @@socket.recv 4096
+    begin
+      timeout(1) do
+        @@socket.print command
+        @@last_response = @@socket.recv 4096
+      end
+
+      last_response
+    rescue Timeout::Error
+      nil
+    end
   end
 
   # Refers to the response from the last command sent to jarvis.
