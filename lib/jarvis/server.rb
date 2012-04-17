@@ -237,7 +237,7 @@ module Jarvis
     # to the client. This become a necessity when multiple called to send_data
     # are made in one "request".
     def send_data data
-      data += "\n"
+      data = data.to_s + "\n"
       super
     end
 
