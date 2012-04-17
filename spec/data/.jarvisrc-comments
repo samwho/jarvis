@@ -1,0 +1,8 @@
+# An intial comment.
+volume
+tempo
+
+# Another comment
+load Random
+load Otomata
+Otomata.poke 1 2

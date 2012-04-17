@@ -37,6 +37,14 @@ module Jarvis
       end
     end
 
+    logger.level = Jarvis.options[:loglevel]
+
     return logger
+  end
+
+  # Reloads the default logger. Use this if you have changed options in the
+  # options hash that affect the logger directly.
+  def self.reload_log
+    Jarvis.log = Jarvis.default_logger
   end
 end

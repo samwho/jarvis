@@ -43,25 +43,42 @@ describe Jarvis::MusicServer do
     last_response.should == "60"
   end
 
+  it 'can source files' do
+    send_command "source #{Jarvis::TESTDATADIR + '/.jarvisrc-standard'}"
+    puts errors
+    last_response.should include('successfully')
+    errors.should be_empty
+  end
+
+  it 'can source files with comments in them' do
+    send_command "source #{Jarvis::TESTDATADIR + '/.jarvisrc-comments'}"
+    puts errors
+    last_response.should include('successfully')
+    errors.should be_empty
+  end
+
+  it 'can handle multiple commands in one request' do
+    send_command 'volume; tempo; volume up; tempo up;'
+    errors.should be_empty
+  end
+
   it 'handles commands that are not recognised' do
     send_command 'definitelynotgoingtoberecognised'
-    last_response.should include('ERROR')
-    last_response.should include('definitelynotgoingtoberecognised')
+    errors.should_not be_empty
   end
 
   it 'handles bad load commands' do
     send_command 'load Notarealgeneratorwhatsoeverlol'
-    last_response.should include('ERROR')
-    last_response.should include('Notarealgeneratorwhatsoeverlol')
+    errors.should_not be_empty
   end
 
   it 'handles bad volume requests' do
     send_command 'volume garbage'
-    last_response.should include('ERROR')
 
     send_command 'volume 80'
     send_command 'volume moregarbage lol'
-    last_response.should include('ERROR')
+
+    errors.should_not be_empty
   end
 end
 
