@@ -3,7 +3,6 @@ if RUBY_VERSION =~ /1.9/
     class UniMIDI < MIDI
       def connect
         aconnectil = `aconnect -il`
-        puts aconnectil
         input = aconnectil.match(/(Virtual Raw MIDI [0-9]-[0-9])/)[0]
         MIDI.aconnect input
 

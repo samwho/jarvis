@@ -1,16 +1,14 @@
 language: ruby
 rvm:
     - 1.8.7
+    - 1.9.1
     - 1.9.2
     - 1.9.3
 
 before_install:
-    # - sudo modprobe snd-seq
     - sudo modprobe snd-seq-device
     - sudo modprobe snd-seq-midi
-    # - sudo modprobe snd-seq-oss
-    # - sudo modprobe snd-seq-midi-event
-    - sudo modprobe snd-virmidi
+    - sudo modprobe snd-virmids
     - sudo chmod a+rw /dev/snd/*
     - sudo apt-get update
     - sudo apt-get install libasound2-dev libasound2 alsa-utils timidity
