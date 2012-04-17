@@ -49,7 +49,10 @@ module Jarvis
       fork do
         # Run the two aconnect calls to find input and output devices
         aconnectol = `aconnect -ol`
-        puts aconnectol
+
+        # Useful debugging output.
+        Jarvis.log.debug "Output of aconnect -ol: "
+        Jarvis.log.debug aconnectol
 
         # Output is little tricky. It will depend on the synth server.
         # The following code tries to search for common MIDI synths.

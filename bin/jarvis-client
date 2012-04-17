@@ -38,7 +38,7 @@ class Echo < EM::Connection
   end
 
   def receive_data(data)
-    puts data
+    print data
     print "jarvis-client> ".blue
     STDOUT.flush
   end

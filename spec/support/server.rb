@@ -11,7 +11,7 @@ shared_context 'server' do
   # Commands can be sent to this jarvis instance with the send_command method.
   def start_jarvis
     @@jarvis_pid = fork do
-      exec "#{Jarvis::ROOTDIR}/bin/jarvis --port #{@@jarvis_port}"
+      exec "#{Jarvis::ROOTDIR}/bin/jarvis --port #{@@jarvis_port} -d"
     end
 
     sleep(1)
@@ -21,16 +21,12 @@ shared_context 'server' do
   # Sends a command to the jarvis server that's running and returns the string
   # response from the server.
   def send_command command
-    begin
-      timeout(1) do
-        @@socket.print command
-        @@last_response = @@socket.recv 4096
-      end
-
-      last_response
-    rescue Timeout::Error
-      nil
+    timeout(5) do
+      @@socket.print(command + "\n")
+      @@last_response = @@socket.recv 4096
     end
+
+    last_response
   end
 
   # Refers to the response from the last command sent to jarvis.
