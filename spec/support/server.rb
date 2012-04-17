@@ -1,32 +1,53 @@
+require 'socket'
+
 shared_context 'server' do
-  # Helper method to send a command to the Jarvis server.
+  @@jarvis_host = 'localhost'
+  @@jarvis_port = 1337
+
+  # Starts up the external jarvis process and waits for it to boot. Then it
+  # initiates a connection to the jarvis process under the @@socket variable.
+  #
+  # Commands can be sent to this jarvis instance with the send_command method.
+  def start_jarvis
+    @@jarvis_pid = fork do
+      exec "#{Jarvis::ROOTDIR}/bin/jarvis"
+    end
+
+    sleep(1)
+    @@socket = TCPSocket.new @@jarvis_host, @@jarvis_port
+  end
+
+  # Sends a command to the jarvis server that's running and returns the string
+  # response from the server.
   def send_command command
-    @jarvis.receive_data command
-    @last_response = @jarvis.sent_data.last
+    @@socket.print command
+    @@last_response = @@socket.recv 4096
   end
 
-  # Helper method to check the value of the last command sent.
+  # Refers to the response from the last command sent to jarvis.
   def last_response
-    @last_response
+    @@last_response
   end
 
+  # Stops the external jarvis process and closes the socket connection to it.
+  def stop_jarvis
+    if @@jarvis_pid
+      @@socket.close if @@socket
+      Process.kill('SIGINT', @@jarvis_pid)
+      Process.wait(@@jarvis_pid)
+      @@jarvis_pid = nil
+    end
+  end
+
+
+  # RSpec hook to start jarvis before every test case in this context.
   before :each do
-    # Set option defaults and override testing to true
-    Jarvis.options = Jarvis.option_defaults
-    Jarvis.options[:logfile] = '/dev/null'
-    Jarvis.options[:testing] = true
-    Jarvis.log = Jarvis.default_logger
-
-    # Reset the commands array. This stops duplicate command errors.
-    Jarvis::Command.reset
-
-    @jarvis = Jarvis::MusicServer.new nil
     @last_response = nil
+    start_jarvis
   end
 
+  # RSpec hook to stop jarvis after every test case in this context.
   after :each do
-    @jarvis.unbind
-    @jarvis = nil
+    stop_jarvis
   end
-
 end
