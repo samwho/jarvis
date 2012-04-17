@@ -5,7 +5,7 @@ rvm:
     - 1.9.3
 
 before_install:
-    - sudo modprobe snd-seq
+    # - sudo modprobe snd-seq
     - sudo modprobe snd-seq-device
     - sudo modprobe snd-seq-midi
     # - sudo modprobe snd-seq-oss

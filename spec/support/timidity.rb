@@ -41,6 +41,9 @@ shared_context "timidity" do
 
   # Sets up an rspec hook to start the timidity server before each spec
   before :each do
+    # Ensure that a test.ogg file exists.
+    FileUtils.touch test_ogg_path
+
     start_timidity
   end
 
@@ -48,6 +51,8 @@ shared_context "timidity" do
   after :each do
     stop_timidity
 
+    # Ensure that the test.ogg file is clean before the next test.
     FileUtils.rm test_ogg_path
+    FileUtils.touch test_ogg_path
   end
 end
