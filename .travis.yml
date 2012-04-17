@@ -10,6 +10,7 @@ before_install:
     - sudo modprobe snd-seq-midi
     # - sudo modprobe snd-seq-oss
     # - sudo modprobe snd-seq-midi-event
+    - sudo modprobe snd-virmidi
     - sudo chmod a+rw /dev/snd/*
     - sudo apt-get update
     - sudo apt-get install libasound2-dev libasound2 alsa-utils timidity
