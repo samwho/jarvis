@@ -7,9 +7,9 @@ rvm:
 before_install:
     - sudo modprobe snd-seq-device
     - sudo modprobe snd-seq-midi
-    - sudo modprobe snd-seq-oss
-    - sudo modprobe snd-seq-midi-event
-    - sudo modprobe snd-seq
+    # - sudo modprobe snd-seq-oss
+    # - sudo modprobe snd-seq-midi-event
+    # - sudo modprobe snd-seq
     - sudo apt-get update
     - sudo apt-get install libasound2-dev
     - sudo apt-get install timidity
