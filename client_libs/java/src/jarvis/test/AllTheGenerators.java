@@ -12,7 +12,7 @@ public class AllTheGenerators {
             MarkovChains m = new MarkovChains();
             Otomata o = new Otomata();
             Scale s = new Scale();
-            CellularAutonoma c = new CellularAutonoma();
+            CellularAutomata c = new CellularAutomata();
 
             r.start();
             Thread.sleep(5000);

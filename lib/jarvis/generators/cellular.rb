@@ -1,7 +1,7 @@
 require 'colored'
 
 module Jarvis::Generators
-  class CellularAutonoma < NoteGenerator
+  class CellularAutomata < NoteGenerator
     def initialize density = 0.4
       # Construct the "world" grid (16x12)
       @grid   = generate_grid 16, 8, density

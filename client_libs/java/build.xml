@@ -8,6 +8,7 @@
     <property name="test.dir"       value="test"/>
     <property name="test-build.dir" value="${build.dir}/test"/>
     <property name="test-lib.dir"   value="test-lib"/>
+    <property name="jarvis-bin.dir" value="../../bin/"/>
     <property name="main-class"     value="jarvis.test.AllTheGenerators"/>
     <property name="verbose"        value="false" />
 

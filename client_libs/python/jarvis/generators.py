@@ -33,5 +33,5 @@ class Random(Jarvis):
 class MarkovChains(Jarvis):
     pass
 
-class CellularAutonoma(Jarvis):
+class CellularAutomata(Jarvis):
     pass
