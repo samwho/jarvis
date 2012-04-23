@@ -1,19 +1,20 @@
 # The Virmidi Module
 
-If you're on linux, you'll need to snd-virmidi module to be enabled. The
+If you're on Linux, you'll need the snd-virmidi module to be enabled. The
 following command will do that (you may need to run this as root):
 
     modprobe snd-virmidi index=1
 
 The index variable will change if you have more than one sound card. Run the
-following commands to see your sound cards:
+following command to see your sound cards:
 
     cat /proc/asound/cards
 
-If there is 1 item in the list, use 1 as your index. If 2, use 2 etc.
+The leftmost column is the index value for the sound card. This is the number
+that you will need to use in the modprobe call above.
 
-This will give you some virtual midi devices that unimidi will be able to
-connect to and send output to.
+The snd-virmidi module will give you some virtual midi devices that UniMIDI will
+be able to connect to and send messages via.
 
 # Setting it up to do this automatically on boot
 
@@ -36,10 +37,15 @@ And put the following line in it:
 Obviously change the number after index to reflect what you chose in the section
 above.
 
+## But I don't use Arch Linux...
+
+I'm sorry, I'm not sure what the steps are to load up a module on boot in your
+favourite Linux distribution. You will have to consult Google.
+
 # Connecting it up
 
 After you've sorted all of that out (you might need to reboot your machine to
-check it all works) you will need to connect a virtual midi device to an output
+check it all works) you will need to connect a virtual MIDI device to an output
 device.
 
 First, make sure you have an appropriate output device running. I'm using
@@ -86,6 +92,6 @@ Okay, that's 128:0. Then we connect the two up:
 
     aconnect 24:0 128:0
 
-And whatever comes from the first virtual midi device (the one that unimidi will
+And whatever comes from the first virtual MIDI device (the one that UniMIDI will
 connect to) will be sent straight to timidity and timidity will send it to your
-speakers.
+speakers. Voila! UniMIDI should now be able to make noise.
