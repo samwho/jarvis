@@ -31,6 +31,7 @@ module Jarvis
     defaults[:volume]    = 100
     defaults[:tempo]     = 80
     defaults[:jarvisrc]  = File.expand_path('~/.jarvisrc')
+    defaults[:generator] = "MarkovChains"
     return defaults
   end
 
@@ -90,6 +91,10 @@ module Jarvis
       opts.on('--jarvisrc PATH', 'Path to the jarvis rc file. Defaults to ' +
                                  '~/.jarvisrc') do |jarvisrc|
         Jarvis.options[:jarvisrc] = jarvisrc
+      end
+
+      opts.on('-g', '--generator GENERATOR', 'Default note generator.') do |g|
+        Jarvis.options[:generator] = g
       end
     end.parse!
 
