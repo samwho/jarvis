@@ -39,13 +39,16 @@
     </target>
 
     <target name="test" depends="compile-test">
-        <junit>
+        <junit failureProperty="test.fail" errorProperty="test.error">
             <classpath refid="classpath.test" />
             <formatter type="brief" usefile="false" />
             <batchtest>
                 <fileset dir="${test-build.dir}" includes="**/Test*.class" />
             </batchtest>
         </junit>
+
+        <fail message="Test suite failed." if="test.fail" />
+        <fail message="Test suite failed." if="test.error" />
     </target>
 
     <target name="clean">
