@@ -9,7 +9,7 @@ module Jarvis
       super
 
       # Declare a default generator.
-      @generator = Generators::MarkhovChains.new
+      @generator = Generators::MarkovChains.new
       @last_client_command = []
       @thread = nil
 

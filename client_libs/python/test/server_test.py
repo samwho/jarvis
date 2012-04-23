@@ -27,8 +27,8 @@ class ServerTest(helpers.ServerHelper):
     def test_load_otomata(self):
         assert "Loaded" in self.jarvis.load("Otomata")
 
-    def test_load_markhov(self):
-        assert "Loaded" in self.jarvis.load("MarkhovChains")
+    def test_load_markov(self):
+        assert "Loaded" in self.jarvis.load("MarkovChains")
 
     def test_load_scale(self):
         assert "Loaded" in self.jarvis.load("Scale")

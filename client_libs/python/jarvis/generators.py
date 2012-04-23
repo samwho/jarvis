@@ -30,7 +30,7 @@ class Scale(Jarvis):
 class Random(Jarvis):
     pass
 
-class MarkhovChains(Jarvis):
+class MarkovChains(Jarvis):
     pass
 
 class CellularAutonoma(Jarvis):

@@ -1,2 +1,4 @@
 .rvmrc
 logs/*
+*.pyc
+*.class

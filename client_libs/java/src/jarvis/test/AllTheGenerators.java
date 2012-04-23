@@ -9,7 +9,7 @@ public class AllTheGenerators {
         try {
             // Initialise ALL the generators|
             Random r = new Random();
-            MarkhovChains m = new MarkhovChains();
+            MarkovChains m = new MarkovChains();
             Otomata o = new Otomata();
             Scale s = new Scale();
             CellularAutonoma c = new CellularAutonoma();

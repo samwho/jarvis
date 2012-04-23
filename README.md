@@ -64,7 +64,7 @@ good terminal environment, should appear a light blue):
 
     jarvis-client>
 
-By default, a MarkhovChain generator is loaded up. This was part of my research
+By default, a MarkovChain generator is loaded up. This was part of my research
 and by default it doesn't sound too bad as an attempt to generate music. Try it
 out with:
 

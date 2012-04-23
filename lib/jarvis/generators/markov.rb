@@ -1,7 +1,7 @@
 require 'json'
 
 module Jarvis::Generators
-  class MarkhovChains < NoteGenerator
+  class MarkovChains < NoteGenerator
     DEFAULT_NDB = Jarvis::ROOTDIR + '/data/db2.ndb'
 
     def initialize path = DEFAULT_NDB, lookahead = 0
@@ -80,7 +80,7 @@ module Jarvis::Generators
     end
 
     # Because chords are represented as string of comma separated integers in
-    # the Markhov Chain note data format, this function will split them and
+    # the Markov Chain note data format, this function will split them and
     # convert it into an actual array of integers.
     def create_notes note_string
       note_string.split(',').map { |n| n.to_i }

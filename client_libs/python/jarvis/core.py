@@ -27,7 +27,7 @@ class Jarvis:
         not valid, a JarvisError is raised.'''
         try:
             self.socket.send(message)
-            response =  self.socket.recv(4096)
+            response = self.socket.recv(4096)
             if response.startswith("ERROR: "):
                 raise JarvisError(response.strip())
             else:
