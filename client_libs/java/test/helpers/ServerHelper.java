@@ -17,10 +17,10 @@ public class ServerHelper {
   public void setUp() {
     try {
       serverProcess = Runtime.getRuntime().exec("jarvis --testing");
-      serverStdOut  = new BufferedInputStream(serverProcess.getInputStream());
       // Give the server some time to boot. Dirty, I know, but I can't
       // think of any better way of doing this at the moment.
-      Thread.sleep(1000);
+      Thread.sleep(2000);
+      serverStdOut  = new BufferedInputStream(serverProcess.getInputStream());
       jarvis = new Jarvis();
     } catch (SecurityException e) {
       System.out.println("SecurityException in setUp: " + e.getMessage());
